@@ -103,7 +103,6 @@ public class ChessView extends View {
 
 
                 if (board[x][y] == Piece.BLACK_KNIGHT) {
-                    piece = BitmapFactory.decodeResource(getResources(),R.drawable.knight);
                     canvas.drawBitmap(piece,null,bounding_box,null);
                     Log.i(TAG,"Knight - [" + x + "][" + y + "]");
                 }
