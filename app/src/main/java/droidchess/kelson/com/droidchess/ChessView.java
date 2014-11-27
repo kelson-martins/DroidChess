@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -102,10 +104,28 @@ public class ChessView extends View {
                 boxes[x][y] = new RectF(l,t,r,b);
 
 
-                if (board[x][y] == Piece.BLACK_KNIGHT) {
-                    canvas.drawBitmap(piece,null,bounding_box,null);
-                    Log.i(TAG,"Knight - [" + x + "][" + y + "]");
+                switch (board[x][y]) {
+                    case WHITE_PAWN: {
+                        piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_pawn);
+                        break;
+                    }
+                    case WHITE_ROOK: {
+                        piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_rook);
+                        break;
+                    }
+                    case WHITE_KNIGHT: {
+                        piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_knight);
+                        break;
+                    }
+                    default: {
+                        piece = null;
+                    }
                 }
+
+                    if(piece != null) {
+                        canvas.drawBitmap(piece,bounding_box.centerX() - (piece.getWidth() / 2) ,bounding_box.top + (( bounding_box.height() - piece.getHeight()) / 2) ,null);
+                    }
+
 
                 i++;
             }
@@ -122,11 +142,50 @@ public class ChessView extends View {
 
     void arrangePieces() {
 
-        // Black Pieces
-        board[1][0] = Piece.BLACK_KNIGHT;
-        board[6][0] = Piece.BLACK_KNIGHT;
 
         // White Pieces
+        board[0][6] = Piece.WHITE_PAWN;
+        board[1][6] = Piece.WHITE_PAWN;
+        board[2][6] = Piece.WHITE_PAWN;
+        board[3][6] = Piece.WHITE_PAWN;
+        board[4][6] = Piece.WHITE_PAWN;
+        board[5][6] = Piece.WHITE_PAWN;
+        board[6][6] = Piece.WHITE_PAWN;
+        board[7][6] = Piece.WHITE_PAWN;
+        board[0][7] = Piece.WHITE_ROOK;
+        board[1][7] = Piece.WHITE_KNIGHT;
+        board[2][7] = Piece.WHITE_BISHOP;
+        board[3][7] = Piece.WHITE_KING;
+        board[4][7] = Piece.WHITE_QUEEN;
+        board[5][7] = Piece.WHITE_BISHOP;
+        board[6][7] = Piece.WHITE_KNIGHT;
+        board[7][7] = Piece.WHITE_ROOK;
+
+        // Black Pieces
+        board[0][1] = Piece.BLACK_PAWN;
+        board[1][1] = Piece.BLACK_PAWN;
+        board[2][1] = Piece.BLACK_PAWN;
+        board[3][1] = Piece.BLACK_PAWN;
+        board[4][1] = Piece.BLACK_PAWN;
+        board[5][1] = Piece.BLACK_PAWN;
+        board[6][1] = Piece.BLACK_PAWN;
+        board[7][1] = Piece.BLACK_PAWN;
+        board[0][0] = Piece.BLACK_ROOK;
+        board[1][0] = Piece.BLACK_KNIGHT;
+        board[2][0] = Piece.BLACK_BISHOP;
+        board[3][0] = Piece.BLACK_QUEEN;
+        board[4][0] = Piece.BLACK_KING;
+        board[5][0] = Piece.BLACK_BISHOP;
+        board[6][0] = Piece.BLACK_KNIGHT;
+        board[7][0] = Piece.BLACK_ROOK;
+
+        for (int i  = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] == null) {
+                    board[i][j] = Piece.EMPTY;
+                }
+            }
+        }
 
     }
 }
