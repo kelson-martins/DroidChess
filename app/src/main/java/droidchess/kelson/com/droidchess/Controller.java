@@ -5,14 +5,15 @@ package droidchess.kelson.com.droidchess;
  */
 public class Controller {
 
-    private int getPiece(int cx, int cy) {//get pieces of the particular cell on the board
+    private Piece getPiece(int cx, int cy) {//get pieces of the particular cell on the board
         // TODO Auto-generated method stub
-        int[][] board=new int[8][8];
-        int piece;//temp variable to store cell piece
+
+        Piece[][] board=new Piece[8][8];
+        Piece piece;//temp variable to store cell piece
         try {
             piece = board[cx][cy];//try to get this particular cell
         } catch (ArrayIndexOutOfBoundsException e) {
-            piece = -1;//if the cell is not on board, out of bound
+            piece = Piece.OUT;//if the cell is not on board, out of bound
         }
 
         return piece;//give back the piece
