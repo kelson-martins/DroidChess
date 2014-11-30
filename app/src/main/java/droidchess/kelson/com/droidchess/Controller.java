@@ -1,5 +1,7 @@
 package droidchess.kelson.com.droidchess;
 
+import java.util.Objects;
+
 /**
  * Created by Kelson on 11/21/2014.
  */
@@ -19,32 +21,125 @@ public class Controller {
         return piece;//give back the piece
     }
 
+    public boolean[][] syncBox(boolean[][] store,boolean[][] add){
+        boolean[][] stored=new boolean[8][8];
+        for(int x=0;x<8;x++){
+            for(int y=0;y<8;y++){
+                if(store[x][y] || add[x][y]){
+                    stored[x][y]=true;
+                }
+            }
+        }
+
+
+
+
+        return stored;
+    }
+
+public void pawnkill(boolean[][] stp,int px,int py,int pd){
+    if(oppose(px,py,px+1,py+pd)){
+        stp[px+1][px+pd]=true;
+    }
+    if(oppose(px,py,px-1,py+pd)){
+        stp[px-1][px+pd]=true;
+    }
+
+}
+
+    public void pawnmove(boolean[][] stp,int px,int py,int pd){
+           int con=0;
+        if(pd==-1){
+            con=6;
+        }else if(pd==1){con=1;}
+
+        if (py==con) {
+            if(getPiece(px,py+pd+pd)==Piece.EMPTY){
+                stp[px][py+pd+pd]=true;
+            }
+        }
+        if(getPiece(px,py+pd)==Piece.EMPTY){
+            stp[px][py+pd]=true;
+        }
+
+
+    }
+
+    public boolean isCheck(){
+        boolean cflag=false;
+        boolean[][] trueBox=new boolean[8][8];
+        Object Kings=Piece.OUT;
+        Object[] Player=new Object[6];
+        int kingx=-1;
+        int kingy=-1;
+        int pawnd=0;
+        if(true){//need current player
+            Kings=Piece.WHITE_KING;
+            Player[0]=Piece.BLACK_PAWN;
+            Player[1]=Piece.BLACK_ROOK;
+            Player[2]=Piece.BLACK_KNIGHT;
+            Player[3]=Piece.BLACK_BISHOP;
+            Player[4]=Piece.BLACK_QUEEN;
+            Player[5]=Piece.BLACK_KING;
+            pawnd=1;
+        }else{Kings=Piece.BLACK_KING;
+            Player[0]=Piece.WHITE_PAWN;
+            Player[1]=Piece.WHITE_ROOK;
+            Player[2]=Piece.WHITE_KNIGHT;
+            Player[3]=Piece.WHITE_BISHOP;
+            Player[4]=Piece.WHITE_QUEEN;
+            Player[5]=Piece.WHITE_KING;
+            pawnd=-1;
+        }
+
+
+        //need x,y of last position?
+        //or check every pieces?
+        //need current player...
+        //not certain
+        for(int kx=0;kx<8;kx++){
+            for(int ky=0;ky<8;ky++){//check every cell
+                if(getPiece(kx,ky)==Kings){
+                    kingx=kx;kingy=ky;
+                    continue;}//get king location then check other cell
+                if(getPiece(kx, ky) == Player[0]){pawnkill(trueBox,kx,ky,pawnd);break;}
+                for(int kk=1;kk<6;kk++) {//look for player piece
+                    if (getPiece(kx, ky) == Player[kk]) {//if it player piece
+                        trueBox = syncBox(trueBox, move(Player[kk], kx, ky));//inside generate.
+                        //get line of sight for move
+                        break;//out of this cell,check other cell
+                    }
+
+                }
+
+            }
+        }
+        if(getPiece(kingx,kingy)!=Piece.OUT) {
+            if (trueBox[kingx][kingy])
+            { cflag=true;}
+        }
+        return cflag;
+    }
+
 
 
     public boolean[][] move(Object piece,int cx,int cy){
         boolean[][] state = new boolean[8][8];
         //int temp=0;
 
-        switch (ChessView.board[cx][cy]){
+        switch (ChessView.board[cx][cy]){//can change by piece, or getpiece outside?
             case WHITE_PAWN: {
                 //pawn
                 //pawn(x,y,d){
                 // check flag 1st move
-                if (cy==6) {
-                    if(getPiece(cx,cy-2)==Piece.EMPTY){
-                    state[cx][cy-2]=true;
-                    }
-                }
-                    if(getPiece(cx,cy-1)==Piece.EMPTY){
-                        state[cx][cy-1]=true;
-                    }
-                    if(oppose(cx,cy,cx-1,cy-1)){
-                        state[cx-1][cy-1]=true;
-                    }
-                if(oppose(cx,cy,cx+1,cy-1)){
-                    state[cx+1][cy-1]=true;
-                }
-
+            //    if (cy==6) {
+             //       if(getPiece(cx,cy-2)==Piece.EMPTY){state[cx][cy-2]=true;}
+            //    }
+            //        if(getPiece(cx,cy-1)==Piece.EMPTY){state[cx][cy-1]=true;}
+            //        if(oppose(cx,cy,cx-1,cy-1)){state[cx-1][cy-1]=true;}
+            //    if(oppose(cx,cy,cx+1,cy-1)){state[cx+1][cy-1]=true;}
+                pawnmove(state,cx,cy,-1);
+                pawnkill(state,cx,cy,-1);
 
 
 
@@ -60,20 +155,8 @@ public class Controller {
                 //pawn
                 //pawn(x,y,d){
                 // check flag 1st move
-                if (cy==1) {
-                    if(getPiece(cx,cy+2)==Piece.EMPTY){
-                        state[cx][cy+2]=true;
-                    }
-                }
-                if(getPiece(cx,cy+1)==Piece.EMPTY){
-                    state[cx][cy+1]=true;
-                }
-                if(oppose(cx,cy,cx-1,cy+1)){
-                    state[cx-1][cy+1]=true;
-                }
-                if(oppose(cx,cy,cx+1,cy+1)){
-                    state[cx+1][cy+1]=true;
-                }
+                pawnmove(state,cx,cy,1);
+                pawnkill(state,cx,cy,1);
 
 
 
@@ -421,7 +504,9 @@ public class Controller {
         return state;
     }
 
-private boolean oppose(int x0,int y0,int x1,int y1){
+
+
+    private boolean oppose(int x0,int y0,int x1,int y1){
     boolean opposing=false;
     int a=0;
     int b=0;
