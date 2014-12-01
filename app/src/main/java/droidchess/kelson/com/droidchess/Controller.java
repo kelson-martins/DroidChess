@@ -65,15 +65,58 @@ public void pawnkill(boolean[][] stp,int px,int py,int pd){
 
     }
 
-    public boolean isCheck(){
-        boolean cflag=false;
+    public void checkmate(){
+        //is called after check flag is true...
+        //forget that...
+        //2nd click, then check for checked() if true then next swap player
+        // if checked() true, king attempt move and isCheck()?
+        // well check king surounding ok found solution.
+        //get box of truth...then get king surrounding?no...still not done
+        //need attempt move? ok found other solution...
+        //checked first...save xy, check king surrounding with box of truth
+        //if king surrounding is all true, get opposing box of truth...
+        //if xy saved is true on box of truth opposing then hope...
+        //black box, white box, king position, piece position, called if checked()
+        //make game record? from arraylist? nope just kidding
+
+    }
+
+    public boolean Checked(Piece king,int ex,int ey){//called every move?
+        boolean checkf=false;
+        boolean[][] cst=new boolean[8][8];
+        int tempx=-1;
+        int tempy=-1;
+
+        cst=move(getPiece(ex,ey),ex,ey);
+
+        while(tempx==-1 &&tempy==-1) {//no need
+            for (int xk = 0; xk < 8; xk++) {
+                for (int yk = 0; yk < 8; yk++) {
+                    if (getPiece(xk, yk) == king) {
+                        tempx = xk;
+                        tempy = yk;
+                        break;//no need 2
+                    }
+                }
+            }
+        }
+
+
+        return cst[tempx][tempy];
+
+
+
+    }
+
+    public boolean[][] isCheck(Piece king){//called after king move
+        //boolean cflag=false;
         boolean[][] trueBox=new boolean[8][8];
         Object Kings=Piece.OUT;
         Object[] Player=new Object[6];
         int kingx=-1;
         int kingy=-1;
         int pawnd=0;
-        if(true){//need current player
+        if(king==Piece.WHITE_KING){//need current player
             Kings=Piece.WHITE_KING;
             Player[0]=Piece.BLACK_PAWN;
             Player[1]=Piece.BLACK_ROOK;
@@ -114,11 +157,11 @@ public void pawnkill(boolean[][] stp,int px,int py,int pd){
 
             }
         }
-        if(getPiece(kingx,kingy)!=Piece.OUT) {
-            if (trueBox[kingx][kingy])
-            { cflag=true;}
-        }
-        return cflag;
+        //if(getPiece(kingx,kingy)!=Piece.OUT) {
+        //    if (trueBox[kingx][kingy])
+        //    { cflag=true;}
+        //}
+        return trueBox;
     }
 
 
