@@ -25,7 +25,7 @@ public class ChessView extends View {
     private boolean whiteTurn = true;
 
     // an 8x8 array that represents our game board
-    private static Piece[][] board;
+    public static Piece[][] board;
 
     private RectF[][] boxes;
 
