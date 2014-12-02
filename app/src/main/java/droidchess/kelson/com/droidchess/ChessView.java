@@ -6,11 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -20,6 +19,10 @@ import android.view.View;
 public class ChessView extends View {
 
     final String TAG = "ChessView";
+
+    private boolean pieceSelected = false;
+
+    private boolean whiteTurn = true;
 
     // an 8x8 array that represents our game board
     private static Piece[][] board;
@@ -37,6 +40,7 @@ public class ChessView extends View {
 
     // determines the cell coordinates of the press and the release for making moves
     private int press_x, press_y;
+    private int selected_x, selected_y;
 
     private Bitmap piece;
 
@@ -60,7 +64,7 @@ public class ChessView extends View {
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         white = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        black.setColor(Color.BLACK);
+        black.setColor(Color.DKGRAY);
         white.setColor(Color.WHITE);
 
         board = new Piece[8][8];
@@ -69,7 +73,8 @@ public class ChessView extends View {
 
         press_x = 0;
         press_y = 0;
-
+        selected_x = 0;
+        selected_y = 0;
         bounding_box = new RectF();
         arrangePieces();
     }
@@ -106,15 +111,87 @@ public class ChessView extends View {
 
                 switch (board[x][y]) {
                     case WHITE_PAWN: {
-                        piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_pawn);
+                        if (pieceSelected && whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.pawn_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_pawn);
                         break;
                     }
                     case WHITE_ROOK: {
-                        piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_rook);
+                        if (pieceSelected && whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.rook_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_rook);
                         break;
                     }
                     case WHITE_KNIGHT: {
-                        piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_knight);
+                        if (pieceSelected && whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.knight_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_knight);
+                        break;
+                    }
+                    case WHITE_BISHOP: {
+                        if (pieceSelected && whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.bishop_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_bishop);
+                        break;
+                    }
+                    case WHITE_KING: {
+                        if (pieceSelected && whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.king_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_king);
+                        break;
+                    }
+                    case WHITE_QUEEN: {
+                        if (pieceSelected && whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.queen_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.white_queen);
+                        break;
+                    }
+                    case BLACK_PAWN: {
+                        if (pieceSelected && !whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.pawn_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.black_pawn);
+                        break;
+                    }
+                    case BLACK_ROOK: {
+                        if (pieceSelected && !whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.rook_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.black_rook);
+                        break;
+                    }
+                    case BLACK_KNIGHT: {
+                        if (pieceSelected && !whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.knight_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.black_knight);
+                        break;
+                    }
+                    case BLACK_BISHOP: {
+                        if (pieceSelected && !whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.bishop_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.black_bishop);
+                        break;
+                    }
+                    case BLACK_KING: {
+                        if (pieceSelected && !whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.king_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.black_king);
+                        break;
+                    }
+                    case BLACK_QUEEN: {
+                        if (pieceSelected && !whiteTurn && x == press_x && y == press_y)
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.queen_selected);
+                        else
+                            piece = BitmapFactory.decodeResource(getResources(), R.drawable.black_queen);
                         break;
                     }
                     default: {
@@ -122,14 +199,15 @@ public class ChessView extends View {
                     }
                 }
 
-                    if(piece != null) {
-                        canvas.drawBitmap(piece,bounding_box.centerX() - (piece.getWidth() / 2) ,bounding_box.top + (( bounding_box.height() - piece.getHeight()) / 2) ,null);
-                    }
-
+                if(piece != null) {
+                    canvas.drawBitmap(piece,bounding_box.centerX() - (piece.getWidth() / 2) ,bounding_box.top + (( bounding_box.height() - piece.getHeight()) / 2) ,null);
+                }
 
                 i++;
             }
         }
+
+
 
     }
 
@@ -186,6 +264,58 @@ public class ChessView extends View {
                 }
             }
         }
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+
+            for (int i = 0; i < 8; i++) {
+
+                for (int j = 0; j < 8; j++) {
+
+                    if (boxes[i][j].contains(event.getX(),event.getY()) ) {
+                        press_x = i;
+                        press_y = j;
+                    }
+                }
+            }
+
+            if (pieceSelected) {
+                if (board[press_x][press_y] == Piece.EMPTY) {
+                    board[press_x][press_y] = board[selected_x][selected_y];
+                    board[selected_x][selected_y] = Piece.EMPTY;
+                    pieceSelected = false;
+                    whiteTurn = !whiteTurn;
+                }
+            } else {
+                if (board[press_x][press_y] == Piece.EMPTY) {
+                    return true;
+                }
+                if (board[press_x][press_y].name().contains("WHITE") && whiteTurn) {
+                    pieceSelected = true;
+                }
+                if (board[press_x][press_y].name().contains("BLACK") && !whiteTurn) {
+                    pieceSelected = true;
+                }
+                selected_x = press_x;
+                selected_y = press_y;
+            }
+
+            invalidate();
+            return true;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        this.setMeasuredDimension(widthMeasureSpec, 8 * (widthMeasureSpec/8));
 
     }
 }
