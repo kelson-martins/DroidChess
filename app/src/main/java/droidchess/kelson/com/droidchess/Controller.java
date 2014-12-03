@@ -65,6 +65,53 @@ public void pawnkill(boolean[][] stp,int px,int py,int pd){
 
     }
 
+public void remaining(){
+    //int[] white=new int [5];
+    //int[] black=new int [5];
+    boolean[][] true_state=new boolean[8][8];
+    int whiteP=1;//king
+    int blackP=1;//king
+    int wx=-1;
+    int wy=-1;
+    int bx=-1;
+    int by=-1;
+    boolean event1=false;
+    boolean event2=false;
+
+    for(int px=0;px<8;px++){
+        for(int py=0;py<8;py++){
+            switch(getPiece(px,py)) {
+                case WHITE_PAWN:{whiteP+=3;break;}
+                case WHITE_ROOK:{whiteP+=3;break;}
+                case WHITE_KNIGHT:{whiteP++;break;}//at least 2 or 3
+                case WHITE_BISHOP:{whiteP++;break;}//at least 2 or 3
+                case WHITE_QUEEN:{whiteP+=3;break;}
+                case WHITE_KING:{wx=px;wy=py;break;}//get white king
+                case BLACK_PAWN:{blackP+=3;break;}
+                case BLACK_ROOK:{blackP+=3;break;}
+                case BLACK_KNIGHT:{blackP++;break;}//at least 2 or 3
+                case BLACK_BISHOP:{blackP++;break;}//at least 2 or 3
+                case BLACK_QUEEN:{blackP+=3;break;}
+                case BLACK_KING:{bx=px;by=py;break;}//get black king
+            }
+        }
+    }
+
+    if(whiteP<3){
+        if(whiteP==1){
+            //check king surrounding
+        }
+        event1=true;
+    }//white lacks check piece
+    if(blackP<3){event2=true;}//black lacks check piece
+
+
+
+
+
+
+}
+
     public void checkmate(){
         //is called after check flag is true...
         //forget that...
@@ -166,11 +213,11 @@ public void pawnkill(boolean[][] stp,int px,int py,int pd){
 
 
 
-    public boolean[][] move(Object piece,int cx,int cy){
+    public boolean[][] move(Piece piece,int cx,int cy){
         boolean[][] state = new boolean[8][8];
         //int temp=0;
 
-        switch (ChessView.board[cx][cy]){//can change by piece, or getpiece outside?
+        switch (piece){//can change by piece, or getpiece outside?
             case WHITE_PAWN: {
                 //pawn
                 //pawn(x,y,d){
