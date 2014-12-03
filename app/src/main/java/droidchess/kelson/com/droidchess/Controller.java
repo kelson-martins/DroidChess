@@ -158,8 +158,8 @@ public void remaining(){
     public boolean[][] isCheck(Piece king){//called after king move
         //boolean cflag=false;
         boolean[][] trueBox=new boolean[8][8];
-        Object Kings=Piece.OUT;
-        Object[] Player=new Object[6];
+        Piece Kings=Piece.OUT;
+        Piece[] Player=new Piece[6];
         int kingx=-1;
         int kingy=-1;
         int pawnd=0;

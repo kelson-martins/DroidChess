@@ -21,7 +21,7 @@ public class ChessView extends View {
     final String TAG = "ChessView";
 
     private boolean pieceSelected = false;
-
+    private final Controller c = new Controller();
     private boolean whiteTurn = true;
 
     // an 8x8 array that represents our game board
@@ -284,12 +284,14 @@ public class ChessView extends View {
             }
 
             if (pieceSelected) {
-                if (board[press_x][press_y] == Piece.EMPTY) {
+
+                if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
                     board[press_x][press_y] = board[selected_x][selected_y];
                     board[selected_x][selected_y] = Piece.EMPTY;
                     pieceSelected = false;
                     whiteTurn = !whiteTurn;
                 }
+
             } else {
                 if (board[press_x][press_y] == Piece.EMPTY) {
                     return true;
