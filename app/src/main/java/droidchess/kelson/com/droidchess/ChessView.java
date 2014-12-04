@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -41,6 +42,8 @@ public class ChessView extends View {
     // determines the cell coordinates of the press and the release for making moves
     private int press_x, press_y;
     private int selected_x, selected_y;
+    private int white_pieces = 16;
+    private int black_pieces = 16;
 
     private Bitmap piece;
 
@@ -200,7 +203,8 @@ public class ChessView extends View {
                 }
 
                 if(piece != null) {
-                    canvas.drawBitmap(piece,bounding_box.centerX() - (piece.getWidth() / 2) ,bounding_box.top + (( bounding_box.height() - piece.getHeight()) / 2) ,null);
+                    //if (board[x][y].name().contains("BLACK")) {
+                    canvas.drawBitmap(piece, bounding_box.centerX() - (piece.getWidth() / 2), bounding_box.top + ((bounding_box.height() - piece.getHeight()) / 2), null);
                 }
 
                 i++;
@@ -233,8 +237,8 @@ public class ChessView extends View {
         board[0][7] = Piece.WHITE_ROOK;
         board[1][7] = Piece.WHITE_KNIGHT;
         board[2][7] = Piece.WHITE_BISHOP;
-        board[3][7] = Piece.WHITE_KING;
-        board[4][7] = Piece.WHITE_QUEEN;
+        board[3][7] = Piece.WHITE_QUEEN;
+        board[4][7] = Piece.WHITE_KING;
         board[5][7] = Piece.WHITE_BISHOP;
         board[6][7] = Piece.WHITE_KNIGHT;
         board[7][7] = Piece.WHITE_ROOK;
@@ -285,11 +289,15 @@ public class ChessView extends View {
 
             if (pieceSelected) {
 
-                if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
+                if (selected_x == press_x && selected_y == press_y) {
+                    pieceSelected = false;
+
+                } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
                     board[press_x][press_y] = board[selected_x][selected_y];
                     board[selected_x][selected_y] = Piece.EMPTY;
                     pieceSelected = false;
                     whiteTurn = !whiteTurn;
+                    updateUI();
                 }
 
             } else {
@@ -319,5 +327,30 @@ public class ChessView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         this.setMeasuredDimension(widthMeasureSpec, 8 * (widthMeasureSpec/8));
 
+    }
+
+    private void updateUI() {
+
+        white_pieces = 0;
+        black_pieces = 0;
+
+        for (int i = 0; i < board.length; i++) {
+            for (int k = 0; k < board.length; k++) {
+                if (board[i][k].name().contains("WHITE")) {
+                    white_pieces++;
+                } else if (board[i][k].name().contains("BLACK")) {
+                    black_pieces++;
+                }
+            }
+        }
+
+        MainActivity.whitePieces.setText(white_pieces);
+        MainActivity.blackPieces.setText(black_pieces);
+
+        if (whiteTurn) {
+            MainActivity.currentTurn.setText("White");
+        } else {
+            MainActivity.currentTurn.setText("Black");
+        }
     }
 }

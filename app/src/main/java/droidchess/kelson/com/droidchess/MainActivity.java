@@ -4,14 +4,23 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 
 public class MainActivity extends Activity {
+
+    static TextView whitePieces;
+    static TextView blackPieces;
+    static TextView currentTurn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        whitePieces = (TextView) findViewById(R.id.white);
+        blackPieces = (TextView) findViewById(R.id.black);
+        currentTurn = (TextView) findViewById(R.id.turn);
     }
 
 
