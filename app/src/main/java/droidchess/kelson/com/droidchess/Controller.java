@@ -211,7 +211,22 @@ public void remaining(){
         return trueBox;
     }
 
+    public boolean[][] movepawn(Piece piece,int cx,int cy){boolean[][] state = new boolean[8][8];
+        switch (piece){//can change by piece, or getpiece outside?
+            case WHITE_PAWN: {
 
+                pawnmove(state,cx,cy,-1);
+                pawnkill(state,cx,cy,-1);
+                break;
+            } case BLACK_PAWN: {
+
+                pawnmove(state,cx,cy,1);
+                pawnkill(state,cx,cy,1);
+                break;
+            }
+        }
+            return state;
+    }
 
     public boolean[][] move(Piece piece,int cx,int cy){
         boolean[][] state = new boolean[8][8];
