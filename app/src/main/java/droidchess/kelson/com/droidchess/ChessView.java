@@ -37,7 +37,7 @@ public class ChessView extends View {
     private RectF bounding_box;
 
     // paint objects for the pieces and the board
-    private Paint black, white;
+    private Paint black, white, blue;
 
     // determines the cell coordinates of the press and the release for making moves
     private int press_x, press_y;
@@ -66,10 +66,10 @@ public class ChessView extends View {
 
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         white = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+        blue = new Paint(Paint.ANTI_ALIAS_FLAG);
         black.setColor(Color.DKGRAY);
         white.setColor(Color.WHITE);
-
+        blue.setColor(Color.BLUE);
         board = new Piece[8][8];
 
         boxes = new RectF[8][8];
@@ -88,10 +88,16 @@ public class ChessView extends View {
         super.onDraw(canvas);
 
         int i = 0;
+
+        boolean[][]  movements = new boolean[8][8];
+
         cell_width = canvas.getWidth() / 8;
 
         canvas.save();
 
+        if (pieceSelected) {
+            movements = c.move(board[selected_x][selected_y], selected_x, selected_y);
+        }
         // Draw the Boxes
         for (int x = 0; x < 8; x++) {
 
@@ -202,12 +208,20 @@ public class ChessView extends View {
                     }
                 }
 
+                if (pieceSelected) {
+                    if (movements[x][y]) {
+                        canvas.drawCircle(bounding_box.centerX(),bounding_box.centerY(),cell_width/2,blue);
+                    }
+                }
+
                 if(piece != null) {
                     //if (board[x][y].name().contains("BLACK")) {
                     canvas.drawBitmap(piece, bounding_box.centerX() - (piece.getWidth() / 2), bounding_box.top + ((bounding_box.height() - piece.getHeight()) / 2), null);
                 }
 
                 i++;
+
+
             }
         }
 
@@ -312,6 +326,8 @@ public class ChessView extends View {
                 }
                 selected_x = press_x;
                 selected_y = press_y;
+
+
             }
 
             invalidate();
@@ -357,4 +373,5 @@ public class ChessView extends View {
             MainActivity.currentTurnb.setText("Black");
         }
     }
+
 }
