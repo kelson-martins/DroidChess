@@ -10,16 +10,31 @@ public class Controller {
     private Piece getPiece(int cx, int cy) {//get pieces of the particular cell on the board
         // TODO Auto-generated method stub
 
-        Piece[][] board=new Piece[8][8];
+        //Piece[][] board=new Piece[8][8];
         Piece piece;//temp variable to store cell piece
         try {
-            piece = board[cx][cy];//try to get this particular cell
+            piece = ChessView.board[cx][cy];//try to get this particular cell
         } catch (ArrayIndexOutOfBoundsException e) {
             piece = Piece.OUT;//if the cell is not on board, out of bound
         }
 
         return piece;//give back the piece
     }
+
+    private boolean setPiece(int cx, int cy) {//get pieces of the particular cell on the board
+        // TODO Auto-generated method stub
+
+        //Piece[][] board=new Piece[8][8];
+        Piece piece;//temp variable to store cell piece
+        try {
+            piece = ChessView.board[cx][cy];//try to get this particular cell
+        } catch (ArrayIndexOutOfBoundsException e) {
+            piece = Piece.OUT;//if the cell is not on board, out of bound
+        }
+
+        return false;//give back the piece
+    }
+
 
     public boolean[][] syncBox(boolean[][] store,boolean[][] add){
         boolean[][] stored=new boolean[8][8];
@@ -37,17 +52,18 @@ public class Controller {
         return stored;
     }
 
-    private void pawnkill(boolean[][] stp,int px,int py,int pd){
+    private boolean[][] pawnkill(int px,int py,int pd){boolean[][] stp=new boolean[8][8];
     if(oppose(px,py,px+1,py+pd)){
         stp[px+1][py+pd]=true;
     }
     if(oppose(px,py,px-1,py+pd)){
         stp[px-1][py+pd]=true;
     }
-
+return stp;
 }
 
-    private void pawnmove(boolean[][] stp,int px,int py,int pd){
+    private boolean[][] pawnmove(int px,int py,int pd){
+        boolean[][] stp=new boolean[8][8];
            int con=0;
         if(pd==-1){
             con=6;
@@ -62,7 +78,7 @@ public class Controller {
             stp[px][py+pd]=true;
         }
 
-
+        return stp;
     }
 
 public void remaining(){
@@ -192,7 +208,7 @@ public void remaining(){
                 if(getPiece(kx,ky)==Kings){
                     kingx=kx;kingy=ky;
                     continue;}//get king location then check other cell
-                if(getPiece(kx, ky) == Player[0]){pawnkill(trueBox,kx,ky,pawnd);break;}
+                if(getPiece(kx, ky) == Player[0]){trueBox=pawnkill(kx,ky,pawnd);break;}
                 for(int kk=1;kk<6;kk++) {//look for player piece
                     if (getPiece(kx, ky) == Player[kk]) {//if it player piece
                         trueBox = syncBox(trueBox, move(Player[kk], kx, ky));//inside generate.
@@ -211,17 +227,21 @@ public void remaining(){
         return trueBox;
     }
 
-    public boolean[][] movepawn(Piece piece,int cx,int cy){boolean[][] state = new boolean[8][8];
+    public boolean[][] movetest(Piece piece,int cx,int cy){
+        boolean[][] state = new boolean[8][8];
         switch (piece){//can change by piece, or getpiece outside?
             case WHITE_PAWN: {
 
-                pawnmove(state,cx,cy,-1);
-                pawnkill(state,cx,cy,-1);
+                //state=pawnmove(cx,cy,-1);
+               //state=pawnkill(cx,cy,-1);//only pawn kill moves
+                state=syncBox(pawnmove(cx,cy,-1),pawnkill(cx,cy,-1));
                 break;
             } case BLACK_PAWN: {
 
-                pawnmove(state,cx,cy,1);
-                pawnkill(state,cx,cy,1);
+               // state=pawnmove(cx,cy,1);
+              //state=pawnkill(cx,cy,1);
+               // state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
+                state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
                 break;
             }
         }
@@ -243,9 +263,9 @@ public void remaining(){
             //        if(getPiece(cx,cy-1)==Piece.EMPTY){state[cx][cy-1]=true;}
             //        if(oppose(cx,cy,cx-1,cy-1)){state[cx-1][cy-1]=true;}
             //    if(oppose(cx,cy,cx+1,cy-1)){state[cx+1][cy-1]=true;}
-                pawnmove(state,cx,cy,-1);
-                pawnkill(state,cx,cy,-1);
-
+               // state=pawnmove(cx,cy,-1);
+               // state=pawnkill(cx,cy,-1);
+                state=syncBox(pawnmove(cx,cy,-1),pawnkill(cx,cy,-1));
 
 
 
@@ -255,14 +275,14 @@ public void remaining(){
                 // get piece(x-1,y+d)==opposing >true on state[x-1,y+d]
 
                 // }
-            } break;
+                break;}
             case BLACK_PAWN: {
                 //pawn
                 //pawn(x,y,d){
                 // check flag 1st move
-                pawnmove(state,cx,cy,1);
-                pawnkill(state,cx,cy,1);
-
+               // state=pawnmove(cx,cy,1);
+                //state=pawnkill(cx,cy,1);
+                state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
 
 
 
@@ -273,7 +293,7 @@ public void remaining(){
                 // get piece(x-1,y+d)==opposing >true on state[x-1,y+d]
 
                 // }
-            } break;
+                break; }
         case WHITE_ROOK: {
             //rook
             //private void rook(int x,int y){
@@ -628,7 +648,10 @@ public void remaining(){
         case BLACK_KNIGHT: {a=2;break;}
         case BLACK_BISHOP: {a=2;break;}
         case BLACK_KING: {a=2;break;}
-        case BLACK_QUEEN: {a=2;break;}}
+        case BLACK_QUEEN: {a=2;break;}
+        case EMPTY:{a=3;break;}
+        case OUT:{a=3;break;}
+    }
 
     switch (ChessView.board[x1][y1]){
         case WHITE_PAWN: {b=1;break;}
@@ -642,12 +665,15 @@ public void remaining(){
         case BLACK_KNIGHT: {b=2;break;}
         case BLACK_BISHOP: {b=2;break;}
         case BLACK_KING: {b=2;break;}
-        case BLACK_QUEEN: {b=2;break;}}
-
-    if(a!=b){
-        opposing=true;
+        case BLACK_QUEEN: {b=2;break;}
+        case EMPTY:{b=3;break;}
+        case OUT:{b=3;break;}
     }
-
+if((a+b)==3) {
+    if (a != b) {
+        opposing = true;
+    }
+}
     return opposing;
 }
 

@@ -96,7 +96,8 @@ public class ChessView extends View {
         canvas.save();
 
         if (pieceSelected) {
-            movements = c.move(board[selected_x][selected_y], selected_x, selected_y);
+            movements = c.movetest(board[selected_x][selected_y], selected_x, selected_y);
+
         }
         // Draw the Boxes
         for (int x = 0; x < 8; x++) {
@@ -306,7 +307,7 @@ public class ChessView extends View {
                 if (selected_x == press_x && selected_y == press_y) {
                     pieceSelected = false;
 
-                } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
+                } else if (c.movetest(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
                     board[press_x][press_y] = board[selected_x][selected_y];
                     board[selected_x][selected_y] = Piece.EMPTY;
                     pieceSelected = false;
