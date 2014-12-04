@@ -344,13 +344,17 @@ public class ChessView extends View {
             }
         }
 
-        MainActivity.whitePieces.setText(white_pieces);
-        MainActivity.blackPieces.setText(black_pieces);
+        MainActivity.whitePieces.setText(String.valueOf(white_pieces));
+        MainActivity.blackPieces.setText(String.valueOf(black_pieces));
+        MainActivity.whitePiecesw.setText(String.valueOf(white_pieces));
+        MainActivity.blackPiecesw.setText(String.valueOf(black_pieces));
 
         if (whiteTurn) {
-            MainActivity.currentTurn.setText("White");
+            MainActivity.currentTurnw.setText("White");
+            MainActivity.currentTurnb.setText("White");
         } else {
-            MainActivity.currentTurn.setText("Black");
+            MainActivity.currentTurnw.setText("Black");
+            MainActivity.currentTurnb.setText("Black");
         }
     }
 }

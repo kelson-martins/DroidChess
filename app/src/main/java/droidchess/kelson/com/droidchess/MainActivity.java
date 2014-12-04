@@ -11,7 +11,10 @@ public class MainActivity extends Activity {
 
     static TextView whitePieces;
     static TextView blackPieces;
-    static TextView currentTurn;
+    static TextView whitePiecesw;
+    static TextView blackPiecesw;
+    static TextView currentTurnw;
+    static TextView currentTurnb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +23,10 @@ public class MainActivity extends Activity {
 
         whitePieces = (TextView) findViewById(R.id.white);
         blackPieces = (TextView) findViewById(R.id.black);
-        currentTurn = (TextView) findViewById(R.id.turn);
+        whitePiecesw = (TextView) findViewById(R.id.whitew);
+        blackPiecesw = (TextView) findViewById(R.id.blackw);
+        currentTurnw = (TextView) findViewById(R.id.turnw);
+        currentTurnb = (TextView) findViewById(R.id.turnb);
     }
 
 
