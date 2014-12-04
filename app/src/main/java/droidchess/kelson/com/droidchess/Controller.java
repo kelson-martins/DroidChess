@@ -21,19 +21,7 @@ public class Controller {
         return piece;//give back the piece
     }
 
-    private boolean setPiece(int cx, int cy) {//get pieces of the particular cell on the board
-        // TODO Auto-generated method stub
 
-        //Piece[][] board=new Piece[8][8];
-        Piece piece;//temp variable to store cell piece
-        try {
-            piece = ChessView.board[cx][cy];//try to get this particular cell
-        } catch (ArrayIndexOutOfBoundsException e) {
-            piece = Piece.OUT;//if the cell is not on board, out of bound
-        }
-
-        return false;//give back the piece
-    }
 
 
     public boolean[][] syncBox(boolean[][] store,boolean[][] add){
@@ -636,7 +624,7 @@ public void remaining(){
     int a=0;
     int b=0;
 
-    switch (ChessView.board[x0][y0]){
+    switch (getPiece(x0,y0)){
         case WHITE_PAWN: {a=1;break;}
         case WHITE_ROOK: {a=1;break;}
         case WHITE_KNIGHT: {a=1;break;}
@@ -653,7 +641,7 @@ public void remaining(){
         case OUT:{a=3;break;}
     }
 
-    switch (ChessView.board[x1][y1]){
+    switch (getPiece(x1,y1)){
         case WHITE_PAWN: {b=1;break;}
         case WHITE_ROOK: {b=1;break;}
         case WHITE_KNIGHT: {b=1;break;}
