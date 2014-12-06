@@ -26,7 +26,10 @@ public class Controller {
         int flag=0;
         for(int dx=-1;dx<2;dx++){
             for(int dy=-1;dy<2;dy++){
-                if (!(dx==0 && dy==0)) {flag++;}
+                if (!(dx==0 && dy==0)) {
+                    if(route[kx+dx][ky+dy]){
+                    flag++;}
+                }
             }
         }
         if(flag==8){movecheck=true;}
