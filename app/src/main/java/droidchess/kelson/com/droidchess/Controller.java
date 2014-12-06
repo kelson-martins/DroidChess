@@ -21,7 +21,41 @@ public class Controller {
         return piece;//give back the piece
     }
 
+    public boolean kingmove(boolean[][] route,int kx,int ky){
+        boolean movecheck=false;
+        int flag=0;
+        for(int dx=-1;dx<2;dx++){
+            for(int dy=-1;dy<2;dy++){
+                if (!(dx==0 && dy==0)) {flag++;}
+            }
+        }
+        if(flag==8){movecheck=true;}
 
+        return movecheck;
+    }
+
+public boolean pawnswap(Piece pawn,int sx,int sy){
+    boolean swapflag=false;
+    switch (pawn){
+        case WHITE_PAWN:{
+            if(sy==0){
+                swapflag=true;
+            }
+            break;
+        }
+        case BLACK_PAWN:{
+            if(sy==7){
+                swapflag=true;
+            }
+            break;
+        }
+    }
+
+
+
+
+    return swapflag;
+}
 
 
     public boolean[][] syncBox(boolean[][] store,boolean[][] add){
@@ -72,15 +106,18 @@ return stp;
 public void remaining(){
     //int[] white=new int [5];
     //int[] black=new int [5];
-    boolean[][] true_state=new boolean[8][8];
+
     int whiteP=1;//king
     int blackP=1;//king
     int wx=-1;
     int wy=-1;
     int bx=-1;
     int by=-1;
-    boolean event1=false;
-    boolean event2=false;
+    boolean event1w=false;
+    boolean event2w=false;
+    boolean event1b=false;
+    boolean event2b=false;
+
 
     for(int px=0;px<8;px++){
         for(int py=0;py<8;py++){
@@ -104,13 +141,25 @@ public void remaining(){
     if(whiteP<3){
         if(whiteP==1){
             //check king surrounding
+            if(kingmove(isCheck(getPiece(wx,wy)),wx,wy)){
+                event2w=true;
+            }
+
         }
-        event1=true;
+        event1w=true;
     }//white lacks check piece
-    if(blackP<3){event2=true;}//black lacks check piece
+    if(blackP<3){
+        if(whiteP==1){
+        //check king surrounding
+        if(kingmove(isCheck(getPiece(bx,by)),bx,by)){
+            event2b=true;
+        }
+
+    }
+        event1b=true;}//black lacks check piece
 
 
-
+//check and return array
 
 
 
@@ -196,7 +245,7 @@ public void remaining(){
                 if(getPiece(kx,ky)==Kings){
                     kingx=kx;kingy=ky;
                     continue;}//get king location then check other cell
-                if(getPiece(kx, ky) == Player[0]){trueBox=pawnkill(kx,ky,pawnd);break;}
+                if(getPiece(kx, ky) == Player[0]){trueBox=syncBox(trueBox, pawnkill(kx,ky,pawnd));break;}
                 for(int kk=1;kk<6;kk++) {//look for player piece
                     if (getPiece(kx, ky) == Player[kk]) {//if it player piece
                         trueBox = syncBox(trueBox, move(Player[kk], kx, ky));//inside generate.
