@@ -1,17 +1,13 @@
 package droidchess.kelson.com.droidchess;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -317,17 +313,13 @@ public class ChessView extends View {
 
                 } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
                     board[press_x][press_y] = board[selected_x][selected_y];
-                    try {
-                        checkSwap();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    checkSwap();
                     board[selected_x][selected_y] = Piece.EMPTY;
 
                     pieceSelected = false;
                     whiteTurn = !whiteTurn;
+                    MainActivity.swapTimer(whiteTurn);
                     updateUI();
-
                 }
 
             } else {
@@ -353,7 +345,7 @@ public class ChessView extends View {
         return super.onTouchEvent(event);
     }
 
-    private void checkSwap() throws InterruptedException {
+    private void checkSwap(){
             if (c2.pawnswap(board[press_x][press_y],press_x,press_y)) {
 
                 MainActivity.showDialogFragment(context);

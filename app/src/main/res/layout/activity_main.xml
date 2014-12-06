@@ -16,10 +16,12 @@
             android:orientation="horizontal"
             android:layout_weight="1">
 
-            <Button
+            <TextView
+                android:id="@+id/black_timer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/timer"
+                android:gravity="center"
                 android:rotation="180"/>
         </LinearLayout>
 
@@ -187,9 +189,11 @@
             android:orientation="horizontal"
             android:layout_weight="1">
 
-            <Button
+            <TextView
+                android:id="@+id/white_timer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/timer"/>
         </LinearLayout>
     </LinearLayout>
