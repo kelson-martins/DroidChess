@@ -22,7 +22,10 @@ public class ChessView extends View {
     final String TAG = "ChessView";
 
     private boolean pieceSelected = false;
+
     private final Controller c = new Controller();
+    private final Controller2 c2 = new Controller2();
+
     private boolean whiteTurn = true;
 
     // an 8x8 array that represents our game board
