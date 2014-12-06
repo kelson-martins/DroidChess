@@ -11,5 +11,6 @@
     <string name="black_pieces">Black Pieces: </string>
     <string name="black_pieces_text">16</string>
     <string name="timer">5:00</string>
+    <string name="choices">Choices</string>
 
 </resources>

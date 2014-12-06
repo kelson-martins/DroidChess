@@ -1,5 +1,7 @@
 package droidchess.kelson.com.droidchess;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,6 +29,7 @@ public class ChessView extends View {
     private final Controller2 c2 = new Controller2();
 
     private boolean whiteTurn = true;
+    Context context;
 
     // an 8x8 array that represents our game board
     public static Piece[][] board;
@@ -52,21 +55,23 @@ public class ChessView extends View {
 
     public ChessView(Context context) {
         super(context);
+        this.context = context;
         init();
     }
 
     public ChessView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         init();
     }
 
     public ChessView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.context = context;
         init();
     }
 
     private void init() {
-
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         white = new Paint(Paint.ANTI_ALIAS_FLAG);
         blue = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -312,10 +317,13 @@ public class ChessView extends View {
 
                 } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
                     board[press_x][press_y] = board[selected_x][selected_y];
+                    checkSwap();
                     board[selected_x][selected_y] = Piece.EMPTY;
+
                     pieceSelected = false;
                     whiteTurn = !whiteTurn;
                     updateUI();
+
                 }
 
             } else {
@@ -340,6 +348,39 @@ public class ChessView extends View {
 
         return super.onTouchEvent(event);
     }
+
+    private void checkSwap() {
+            if (c2.pawnswap(board[press_x][press_y],press_x,press_y)) {
+                MainActivity.showDialogFragment(context);
+                switch (MainActivity.lastSwapChoice) {
+                    case 0:
+                        if (whiteTurn)
+                            board[press_x][press_y] = Piece.WHITE_QUEEN;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_QUEEN;
+                        break;
+                    case 1:
+                        if (whiteTurn)
+                            board[press_x][press_y] = Piece.WHITE_ROOK;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_ROOK;
+                        break;
+                    case 2:
+                        if (whiteTurn)
+                            board[press_x][press_y] = Piece.WHITE_BISHOP;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_BISHOP;
+                        break;
+                    case 3:
+                        if (whiteTurn)
+                            board[press_x][press_y] = Piece.WHITE_KNIGHT;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_KNIGHT;
+                        break;
+                }
+            }
+    }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
