@@ -317,7 +317,11 @@ public class ChessView extends View {
 
                 } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
                     board[press_x][press_y] = board[selected_x][selected_y];
-                    checkSwap();
+                    try {
+                        checkSwap();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     board[selected_x][selected_y] = Piece.EMPTY;
 
                     pieceSelected = false;
@@ -349,9 +353,11 @@ public class ChessView extends View {
         return super.onTouchEvent(event);
     }
 
-    private void checkSwap() {
+    private void checkSwap() throws InterruptedException {
             if (c2.pawnswap(board[press_x][press_y],press_x,press_y)) {
+
                 MainActivity.showDialogFragment(context);
+
                 switch (MainActivity.lastSwapChoice) {
                     case 0:
                         if (whiteTurn)

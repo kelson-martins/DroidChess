@@ -3,7 +3,7 @@
 
     <string name="app_name">DroidChess</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Reset</string>
     <string name="current_turn">Current Turn : </string>
     <string name="current_turn_text">White</string>
     <string name="white_pieces">White Pieces: </string>
