@@ -21,13 +21,25 @@ public class Controller {
         return piece;//give back the piece
     }
 
-    public boolean kingmove(boolean[][] route,int kx,int ky){
+    private Boolean getState(boolean[][] top, int cx, int cy) {//get state of the particular cell on the board
+        // TODO Auto-generated method stub
+        Boolean cannotmove=true;//temp variable to store cell piece
+        try {
+            cannotmove = top[cx][cy];//try to get this particular cell
+        } catch (ArrayIndexOutOfBoundsException e) {
+            cannotmove = true;//if the cell is not on board, out of bound
+        }
+
+        return cannotmove;//give back the piece
+    }
+
+    public boolean cankingmove(boolean[][] route,int kx,int ky){
         boolean movecheck=false;
         int flag=0;
         for(int dx=-1;dx<2;dx++){
             for(int dy=-1;dy<2;dy++){
                 if (!(dx==0 && dy==0)) {
-                    if(route[kx+dx][ky+dy]){
+                    if(getState(route,(kx+dx),(ky+dy))){
                     flag++;}
                 }
             }
@@ -54,9 +66,6 @@ public boolean pawnswap(Piece pawn,int sx,int sy){
         }
     }
 
-
-
-
     return swapflag;
 }
 
@@ -70,9 +79,6 @@ public boolean pawnswap(Piece pawn,int sx,int sy){
                 }
             }
         }
-
-
-
 
         return stored;
     }
@@ -106,10 +112,10 @@ return stp;
         return stp;
     }
 
-public void remaining(){
+public boolean isStalemate(){
     //int[] white=new int [5];
     //int[] black=new int [5];
-
+boolean stalemate=false;
     int whiteP=1;//king
     int blackP=1;//king
     int wx=-1;
@@ -144,7 +150,7 @@ public void remaining(){
     if(whiteP<3){
         if(whiteP==1){
             //check king surrounding
-            if(kingmove(isCheck(getPiece(wx,wy)),wx,wy)){
+            if(cankingmove(isCheck(getPiece(wx,wy)),wx,wy)){
                 event2w=true;
             }
 
@@ -154,7 +160,7 @@ public void remaining(){
     if(blackP<3){
         if(whiteP==1){
         //check king surrounding
-        if(kingmove(isCheck(getPiece(bx,by)),bx,by)){
+        if(cankingmove(isCheck(getPiece(bx,by)),bx,by)){
             event2b=true;
         }
 
@@ -163,24 +169,17 @@ public void remaining(){
 
 
 //check and return array
+if((event2w&&event2b)||event1w ||event1b){
+    stalemate=true;
+}
 
-
+return stalemate;
 
 }
 
     public void checkmate(){
-        //is called after check flag is true...
-        //forget that...
-        //2nd click, then check for checked() if true then next swap player
-        // if checked() true, king attempt move and isCheck()?
-        // well check king surounding ok found solution.
-        //get box of truth...then get king surrounding?no...still not done
-        //need attempt move? ok found other solution...
-        //checked first...save xy, check king surrounding with box of truth
-        //if king surrounding is all true, get opposing box of truth...
-        //if xy saved is true on box of truth opposing then hope...
-        //black box, white box, king position, piece position, called if checked()
-        //make game record? from arraylist? nope just kidding
+
+
 
     }
 
@@ -267,6 +266,113 @@ public void remaining(){
         return trueBox;
     }
 
+    private boolean[][] rookmove(int cx,int cy){
+        boolean[][] staterook = new boolean[8][8];
+        int fx = cx;
+        int fy = cy;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (((dx * dx) + (dy * dy)) == 1) {
+                    while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                        staterook[fx + dx][fy + dy] = true;
+                        fx += dx;
+                        fy += dy;
+                    }
+                    if (oppose(cx, cy, fx + dx, fy + dy)) {
+                        staterook[fx + dx][fy + dy] = true;
+                    }
+                    fx = cx;
+                    fy = cy;
+                }
+            }
+        }return staterook;
+    }
+    private boolean[][] knightmove(int cx,int cy){
+        boolean[][] stateknight = new boolean[8][8];
+        if(oppose(cx,cy,cx+1,cy+2) || (getPiece(cx+1,cy+2)==Piece.EMPTY)){
+            stateknight[cx+1][cy+2]=true;//    get piece(x+1,y+2)==(opposing||empty)  >> true on state[x+1][y+2]
+        } if(oppose(cx,cy,cx+1,cy-2) || (getPiece(cx+1,cy-2)==Piece.EMPTY)){
+            stateknight[cx+1][cy-2]=true;//     get piece(x+1,y-2)==(opposing||empty)  >> true on state[x+1][y-2]
+        } if(oppose(cx,cy,cx+2,cy+1) || (getPiece(cx+2,cy+1)==Piece.EMPTY)){
+            stateknight[cx+2][cy+1]=true;//    get piece(x+2,y+1)==(opposing||empty)  >> true on state[x+2][y+1]
+        } if(oppose(cx,cy,cx+2,cy-1) || (getPiece(cx+2,cy-1)==Piece.EMPTY)){
+            stateknight[cx+2][cy-1]=true;//    get piece(x+2,y-1)==(opposing||empty)  >> true on state[x+2][y-1]
+        } if(oppose(cx,cy,cx-1,cy+2) || (getPiece(cx-1,cy+2)==Piece.EMPTY)){
+            stateknight[cx-1][cy+2]=true;//    get piece(x-1,y+2)==(opposing||empty)  >> true on state[x-1][y+2]
+        } if(oppose(cx,cy,cx-1,cy-2) || (getPiece(cx-1,cy-2)==Piece.EMPTY)){
+            stateknight[cx-1][cy-2]=true;//     get piece(x-1,y-2)==(opposing||empty)  >> true on state[x-1][y-2]
+        } if(oppose(cx,cy,cx-2,cy+1) || (getPiece(cx-2,cy+1)==Piece.EMPTY)){
+            stateknight[cx-2][cy+1]=true;//     get piece(x-2,y+1)==(opposing||empty)  >> true on state[x-2][y+1]
+        } if(oppose(cx,cy,cx-2,cy-1) || (getPiece(cx-2,cy-1)==Piece.EMPTY)){
+            stateknight[cx-2][cy-1]=true;//     get piece(x-2,y-1)==(opposing||empty)  >> true on state[x-2][y-1]
+        }
+        return stateknight;
+    }
+    private boolean[][] bishopmove(int cx,int cy){
+        boolean[][] statebishop = new boolean[8][8];
+        int fx = cx;
+        int fy = cy;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (((dx * dx) + (dy * dy)) == 2) {
+                    while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                        statebishop[fx + dx][fy + dy] = true;
+                        fx += dx;
+                        fy += dy;
+                    }
+                    if (oppose(cx, cy, fx + dx, fy + dy)) {
+                        statebishop[fx + dx][fy + dy] = true;
+                    }
+                    fx = cx;
+                    fy = cy;
+                }
+            }
+        }
+        return statebishop;
+    }
+    private boolean[][] queenmove(int cx,int cy){
+        boolean[][] statequeen = new boolean[8][8];
+        int fx = cx;
+        int fy = cy;
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (!(dx==0 && dy==0)) {
+                    while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                        statequeen[fx + dx][fy + dy] = true;
+                        fx += dx;
+                        fy += dy;
+                    }
+                    if (oppose(cx, cy, fx + dx, fy + dy)) {
+                        statequeen[fx + dx][fy + dy] = true;
+                    }
+                    fx = cx;
+                    fy = cy;
+                }
+            }
+        }
+        return statequeen;
+    }
+    private boolean[][] kingmove(int cx,int cy){
+        boolean[][] stateking = new boolean[8][8];
+        if(oppose(cx,cy,cx-1,cy-1) || (getPiece(cx-1,cy-1)==Piece.EMPTY)){
+            stateking[cx-1][cy-1]=true;//    get piece(x-1,y-1) ==(opposing||empty) >> true on state[x-1][y-1]
+        } if(oppose(cx,cy,cx-1,cy) || (getPiece(cx-1,cy)==Piece.EMPTY)){
+            stateking[cx-1][cy]=true;//   get piece(x-1,y)==(opposing||empty) >> true on state[x-1][y]
+        } if(oppose(cx,cy,cx-1,cy+1) || (getPiece(cx-1,cy+1)==Piece.EMPTY)){
+            stateking[cx-1][cy+1]=true;//   get piece(x-1,y+1)==(opposing||empty) >> true on state[x-1][y+1]
+        } if(oppose(cx,cy,cx,cy-1) || (getPiece(cx,cy-1)==Piece.EMPTY)){
+            stateking[cx][cy-1]=true;//  get piece(x,y-1)==(opposing||empty) >> true on state[x][y-1]
+        } if(oppose(cx,cy,cx,cy+1) || (getPiece(cx,cy+1)==Piece.EMPTY)){
+            stateking[cx][cy+1]=true;//  get piece(x,y+1)==(opposing||empty) >> true on state[x][y+1]
+        } if(oppose(cx,cy,cx+1,cy-1) || (getPiece(cx+1,cy-1)==Piece.EMPTY)){
+            stateking[cx+1][cy-1]=true;// get piece(x+1,y-1)==(opposing||empty) >> true on state[x+1][y-1]
+        } if(oppose(cx,cy,cx+1,cy) || (getPiece(cx+1,cy)==Piece.EMPTY)){
+            stateking[cx+1][cy]=true;// get piece(x+1,y)==(opposing||empty) >> true on state[x+1][y]
+        } if(oppose(cx,cy,cx+1,cy+1) || (getPiece(cx+1,cy+1)==Piece.EMPTY)){
+            stateking[cx+1][cy+1]=true;//  get piece(x+1,y+1)==(opposing||empty) >> true on state[x+1][y+1]
+        }
+        return stateking;
+    }
     public boolean[][] movetest(Piece piece,int cx,int cy){
         boolean[][] state = new boolean[8][8];
         switch (piece){//can change by piece, or getpiece outside?
@@ -290,325 +396,58 @@ public void remaining(){
 
     public boolean[][] move(Piece piece,int cx,int cy){
         boolean[][] state = new boolean[8][8];
-        //int temp=0;
+
 
         switch (piece){//can change by piece, or getpiece outside?
             case WHITE_PAWN: {
-                //pawn
-                //pawn(x,y,d){
-                // check flag 1st move
-            //    if (cy==6) {
-             //       if(getPiece(cx,cy-2)==Piece.EMPTY){state[cx][cy-2]=true;}
-            //    }
-            //        if(getPiece(cx,cy-1)==Piece.EMPTY){state[cx][cy-1]=true;}
-            //        if(oppose(cx,cy,cx-1,cy-1)){state[cx-1][cy-1]=true;}
-            //    if(oppose(cx,cy,cx+1,cy-1)){state[cx+1][cy-1]=true;}
-               // state=pawnmove(cx,cy,-1);
-               // state=pawnkill(cx,cy,-1);
+
                 state=syncBox(pawnmove(cx,cy,-1),pawnkill(cx,cy,-1));
 
-
-
-                // get piece(x,y+d)==empty	>true on state[x,y+d]
-                // 1st move && get piece(x,y+2d)==empty >true on state[x,y+2d]
-                // get piece(x+1,y+d)==opposing >true on state[x+1,y+d]
-                // get piece(x-1,y+d)==opposing >true on state[x-1,y+d]
-
-                // }
                 break;}
             case BLACK_PAWN: {
-                //pawn
-                //pawn(x,y,d){
-                // check flag 1st move
-               // state=pawnmove(cx,cy,1);
-                //state=pawnkill(cx,cy,1);
+
                 state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
 
-
-
-
-                // get piece(x,y+d)==empty	>true on state[x,y+d]
-                // 1st move && get piece(x,y+2d)==empty >true on state[x,y+2d]
-                // get piece(x+1,y+d)==opposing >true on state[x+1,y+d]
-                // get piece(x-1,y+d)==opposing >true on state[x-1,y+d]
-
-                // }
                 break; }
         case WHITE_ROOK: {
-            //rook
-            //private void rook(int x,int y){
-            //int cx=x;
-            //int cy=y;
-            int fx = cx;
-            int fy = cy;
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    if (((dx * dx) + (dy * dy)) == 1) {
-                        while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
-                            state[fx + dx][fy + dy] = true;
-                            fx += dx;
-                            fy += dy;
-                        }
-                        if (oppose(fx, fy, fx + dx, fy + dy)) {
-                            state[fx + dx][fy + dy] = true;
-                        }
-                        fx = cx;
-                        fy = cy;
-                    }
-                }
-            }
 
-        //for(int dx=-1;dx<=1;dx++){
-         //   for(int dy=-1;dy<=1;dy++){
-           //     if(((dx*dx)+(dy*dy))==1 ){
-             //       while(getPiece(cx+dx,cy+dy)==empty){
-               //         state[cx+dx][cy+dy]=true;cx+=dx;cy+=dy;
-                 //   }if(getPiece(cx+dx,cy+dy)==opposing){state[cx+dx][cy+dy]=true;}
+            state=rookmove(cx,cy);
 
-                   // cx=x;
-                    //cy=y;
-
-           //     }
-         //   }
-      //  }
-   // }
         break;}
             case BLACK_ROOK: {
-                //rook
-                //private void rook(int x,int y){
-                //int cx=x;
-                //int cy=y;
-                int fx = cx;
-                int fy = cy;
-                for (int dx = -1; dx <= 1; dx++) {
-                    for (int dy = -1; dy <= 1; dy++) {
-                        if (((dx * dx) + (dy * dy)) == 1) {
-                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
-                                state[fx + dx][fy + dy] = true;
-                                fx += dx;
-                                fy += dy;
-                            }
-                            if (oppose(fx, fy, fx + dx, fy + dy)) {
-                                state[fx + dx][fy + dy] = true;
-                            }
-                            fx = cx;
-                            fy = cy;
-                        }
-                    }
-                }
 
-            //for(int dx=-1;dx<=1;dx++){
-            //   for(int dy=-1;dy<=1;dy++){
-            //     if(((dx*dx)+(dy*dy))==1 ){
-            //       while(getPiece(cx+dx,cy+dy)==empty){
-            //         state[cx+dx][cy+dy]=true;cx+=dx;cy+=dy;
-            //   }if(getPiece(cx+dx,cy+dy)==opposing){state[cx+dx][cy+dy]=true;}
+                state=rookmove(cx,cy);
 
-            // cx=x;
-            //cy=y;
-
-            //     }
-            //   }
-            //  }
-            // }
             break;}
         case WHITE_KNIGHT:{//knight
         //knight(x,y){//no check blocking
-        if(oppose(cx,cy,cx+1,cy+2) || (getPiece(cx+1,cy+2)==Piece.EMPTY)){
-            state[cx+1][cy+2]=true;//    get piece(x+1,y+2)==(opposing||empty)  >> true on state[x+1][y+2]
-        } if(oppose(cx,cy,cx+1,cy-2) || (getPiece(cx+1,cy-2)==Piece.EMPTY)){
-            state[cx+1][cy-2]=true;//     get piece(x+1,y-2)==(opposing||empty)  >> true on state[x+1][y-2]
-        } if(oppose(cx,cy,cx+2,cy+1) || (getPiece(cx+2,cy+1)==Piece.EMPTY)){
-            state[cx+2][cy+1]=true;//    get piece(x+2,y+1)==(opposing||empty)  >> true on state[x+2][y+1]
-        } if(oppose(cx,cy,cx+2,cy-1) || (getPiece(cx+2,cy-1)==Piece.EMPTY)){
-            state[cx+2][cy-1]=true;//    get piece(x+2,y-1)==(opposing||empty)  >> true on state[x+2][y-1]
-        } if(oppose(cx,cy,cx-1,cy+2) || (getPiece(cx-1,cy+2)==Piece.EMPTY)){
-            state[cx-1][cy+2]=true;//    get piece(x-1,y+2)==(opposing||empty)  >> true on state[x-1][y+2]
-        } if(oppose(cx,cy,cx-1,cy-2) || (getPiece(cx-1,cy-2)==Piece.EMPTY)){
-            state[cx-1][cy-2]=true;//     get piece(x-1,y-2)==(opposing||empty)  >> true on state[x-1][y-2]
-        } if(oppose(cx,cy,cx-2,cy+1) || (getPiece(cx-2,cy+1)==Piece.EMPTY)){
-            state[cx-2][cy+1]=true;//     get piece(x-2,y+1)==(opposing||empty)  >> true on state[x-2][y+1]
-        } if(oppose(cx,cy,cx-2,cy-1) || (getPiece(cx-2,cy-1)==Piece.EMPTY)){
-            state[cx-2][cy-1]=true;//     get piece(x-2,y-1)==(opposing||empty)  >> true on state[x-2][y-1]
-        }
-
-       // }
-
+            state=knightmove(cx,cy);
 
         break;}
             case BLACK_KNIGHT:{//knight
                 //knight(x,y){//no check blocking
-                if(oppose(cx,cy,cx+1,cy+2) || (getPiece(cx+1,cy+2)==Piece.EMPTY)){
-                    state[cx+1][cy+2]=true;//    get piece(x+1,y+2)==(opposing||empty)  >> true on state[x+1][y+2]
-                } if(oppose(cx,cy,cx+1,cy-2) || (getPiece(cx+1,cy-2)==Piece.EMPTY)){
-                    state[cx+1][cy-2]=true;//     get piece(x+1,y-2)==(opposing||empty)  >> true on state[x+1][y-2]
-                } if(oppose(cx,cy,cx+2,cy+1) || (getPiece(cx+2,cy+1)==Piece.EMPTY)){
-                    state[cx+2][cy+1]=true;//    get piece(x+2,y+1)==(opposing||empty)  >> true on state[x+2][y+1]
-                } if(oppose(cx,cy,cx+2,cy-1) || (getPiece(cx+2,cy-1)==Piece.EMPTY)){
-                    state[cx+2][cy-1]=true;//    get piece(x+2,y-1)==(opposing||empty)  >> true on state[x+2][y-1]
-                } if(oppose(cx,cy,cx-1,cy+2) || (getPiece(cx-1,cy+2)==Piece.EMPTY)){
-                    state[cx-1][cy+2]=true;//    get piece(x-1,y+2)==(opposing||empty)  >> true on state[x-1][y+2]
-                } if(oppose(cx,cy,cx-1,cy-2) || (getPiece(cx-1,cy-2)==Piece.EMPTY)){
-                    state[cx-1][cy-2]=true;//     get piece(x-1,y-2)==(opposing||empty)  >> true on state[x-1][y-2]
-                } if(oppose(cx,cy,cx-2,cy+1) || (getPiece(cx-2,cy+1)==Piece.EMPTY)){
-                    state[cx-2][cy+1]=true;//     get piece(x-2,y+1)==(opposing||empty)  >> true on state[x-2][y+1]
-                } if(oppose(cx,cy,cx-2,cy-1) || (getPiece(cx-2,cy-1)==Piece.EMPTY)){
-                    state[cx-2][cy-1]=true;//     get piece(x-2,y-1)==(opposing||empty)  >> true on state[x-2][y-1]
-                }
-
-                // }
-
+                state=knightmove(cx,cy);
 
                 break;}
         case WHITE_BISHOP:{ //bishop
-        //private void bishop(int x,int y){
-      //  int cx=x;
-      //  int cy=y;
-            int fx = cx;
-            int fy = cy;
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    if (((dx * dx) + (dy * dy)) == 2) {
-                        while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
-                            state[fx + dx][fy + dy] = true;
-                            fx += dx;
-                            fy += dy;
-                        }
-                        if (oppose(fx, fy, fx + dx, fy + dy)) {
-                            state[fx + dx][fy + dy] = true;
-                        }
-                        fx = cx;
-                        fy = cy;
-                    }
-                }
-            }
-      //  for(int dx=-1;dx<=1;dx++){
-      //      for(int dy=-1;dy<=1;dy++){
-       //         if(((dx*dx)+(dy*dy))==2 ){
-       //             while(getPiece(cx+dx,cy+dy)==empty){
-       //                 state[cx+dx][cy+dy]=true;cx+=dx;cy+=dy;
-        //            }if(getPiece(cx+dx,cy+dy)==opposing){state[cx+dx][cy+dy]=true;}
 
-        //            cx=x;
-         //           cy=y;
-
-         //       }
-         //   }
-      //  }
-  //  }
+            state=bishopmove(cx,cy);
 
     break;}
             case BLACK_BISHOP:{ //bishop
-                //private void bishop(int x,int y){
-                //  int cx=x;
-                //  int cy=y;
-                int fx = cx;
-                int fy = cy;
-                for (int dx = -1; dx <= 1; dx++) {
-                    for (int dy = -1; dy <= 1; dy++) {
-                        if (((dx * dx) + (dy * dy)) == 2) {
-                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
-                                state[fx + dx][fy + dy] = true;
-                                fx += dx;
-                                fy += dy;
-                            }
-                            if (oppose(fx, fy, fx + dx, fy + dy)) {
-                                state[fx + dx][fy + dy] = true;
-                            }
-                            fx = cx;
-                            fy = cy;
-                        }
-                    }
-                }
-                //  for(int dx=-1;dx<=1;dx++){
-                //      for(int dy=-1;dy<=1;dy++){
-                //         if(((dx*dx)+(dy*dy))==2 ){
-                //             while(getPiece(cx+dx,cy+dy)==empty){
-                //                 state[cx+dx][cy+dy]=true;cx+=dx;cy+=dy;
-                //            }if(getPiece(cx+dx,cy+dy)==opposing){state[cx+dx][cy+dy]=true;}
 
-                //            cx=x;
-                //           cy=y;
-
-                //       }
-                //   }
-                //  }
-                //  }
+                state=bishopmove(cx,cy);
 
                 break;}
         case WHITE_QUEEN:{//queen
-        //private void queen(int x,int y){
-     //   int cx=x;
-     //   int cy=y;
-            int fx = cx;
-            int fy = cy;
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dy = -1; dy <= 1; dy++) {
-                    if (!(dx==0 && dy==0)) {
-                        while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
-                            state[fx + dx][fy + dy] = true;
-                            fx += dx;
-                            fy += dy;
-                        }
-                        if (oppose(fx, fy, fx + dx, fy + dy)) {
-                            state[fx + dx][fy + dy] = true;
-                        }
-                        fx = cx;
-                        fy = cy;
-                    }
-                }
-            }
-     //   for(int dx=-1;dx<=1;dx++){
-     //       for(int dy=-1;dy<=1;dy++){
-        //        if(!(dx==0 && dy==0)){
-      //              while(getPiece(cx+dx,cy+dy)==empty){
-         //               state[cx+dx][cy+dy]=true;cx+=dx;cy+=dy;
-         //           }if(getPiece(cx+dx,cy+dy)==opposing){state[cx+dx][cy+dy]=true;}
 
-          //          cx=x;
-          //          cy=y;
+            state=queenmove(cx,cy);
 
-         //       }
-         //   }
-      //  }
- //   }
         break;}
             case BLACK_QUEEN:{//queen
-                //private void queen(int x,int y){
-                //   int cx=x;
-                //   int cy=y;
-                int fx = cx;
-                int fy = cy;
-                for (int dx = -1; dx <= 1; dx++) {
-                    for (int dy = -1; dy <= 1; dy++) {
-                        if (!(dx==0 && dy==0)) {
-                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
-                                state[fx + dx][fy + dy] = true;
-                                fx += dx;
-                                fy += dy;
-                            }
-                            if (oppose(fx, fy, fx + dx, fy + dy)) {
-                                state[fx + dx][fy + dy] = true;
-                            }
-                            fx = cx;
-                            fy = cy;
-                        }
-                    }
-                }
-                //   for(int dx=-1;dx<=1;dx++){
-                //       for(int dy=-1;dy<=1;dy++){
-                //        if(!(dx==0 && dy==0)){
-                //              while(getPiece(cx+dx,cy+dy)==empty){
-                //               state[cx+dx][cy+dy]=true;cx+=dx;cy+=dy;
-                //           }if(getPiece(cx+dx,cy+dy)==opposing){state[cx+dx][cy+dy]=true;}
 
-                //          cx=x;
-                //          cy=y;
+                state=queenmove(cx,cy);
 
-                //       }
-                //   }
-                //  }
-                //   }
                 break;}
         case WHITE_KING:{ //king
         //king(x,y){
@@ -655,16 +494,6 @@ public void remaining(){
                 // }
                 break;}
         }
-
-
-
-
-
-
-
-
-
-
 
         return state;
     }
