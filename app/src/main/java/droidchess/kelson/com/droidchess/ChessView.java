@@ -320,6 +320,8 @@ public class ChessView extends View {
                     whiteTurn = !whiteTurn;
                     MainActivity.swapTimer(whiteTurn);
                     updateUI();
+                } else {
+                    return true;
                 }
 
             } else {
