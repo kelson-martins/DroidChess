@@ -101,8 +101,8 @@ public class ChessView extends View {
 
         if (pieceSelected) {
             movements = c.move(board[selected_x][selected_y], selected_x, selected_y);
-
         }
+
         // Draw the Boxes
         for (int x = 0; x < 8; x++) {
 
@@ -121,7 +121,6 @@ public class ChessView extends View {
                     canvas.drawRect(bounding_box,black);
 
                 boxes[x][y] = new RectF(l,t,r,b);
-
 
                 switch (board[x][y]) {
                     case WHITE_PAWN: {

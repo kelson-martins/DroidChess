@@ -35,34 +35,48 @@ public class MainActivity extends Activity {
     static TextView whiteTimer;
     static TextView blackTimer;
 
-    static CountDownTimer whiteCounter = new CountDownTimer(900000, 1000) {
-        @Override
-        public void onTick(long l) {
-            int seconds = (int) (l / 1000) % 60 ;
-            int minutes = (int) ((l / (1000*60)) % 60);
+    static long whiteRemaining = 900000;
+    static long blackRemaining = 900000;
 
-            whiteTimer.setText(formatTimer(minutes) + ":" + formatTimer(seconds));
-        }
+    static CountDownTimer whiteCounter;
+    static CountDownTimer blackCounter;
 
-        @Override
-        public void onFinish() {
-            endgame(false);
-        }
-    };
+    static void whiteCounter() {
+        whiteCounter = new CountDownTimer(whiteRemaining, 1000) {
+            @Override
+            public void onTick(long l) {
+                int seconds = (int) (l / 1000) % 60 ;
+                int minutes = (int) ((l / (1000*60)) % 60);
+                whiteRemaining = l;
+                whiteTimer.setText(formatTimer(minutes) + ":" + formatTimer(seconds));
+            }
 
-    static CountDownTimer blackCounter = new CountDownTimer(900000, 1000) {
-        @Override
-        public void onTick(long l) {
-            int seconds = (int) (l / 1000) % 60 ;
-            int minutes = (int) ((l / (1000*60)) % 60);
-            blackTimer.setText(formatTimer(minutes) + ":" + formatTimer(seconds));
-        }
+            @Override
+            public void onFinish() {
+                endgame(false);
+            }
 
-        @Override
-        public void onFinish() {
-            endgame(true);
-        }
-    };
+
+        }.start();
+    }
+
+    static void blackCounter() {
+         blackCounter = new CountDownTimer(blackRemaining, 1000) {
+            @Override
+            public void onTick(long l) {
+                blackRemaining = l;
+                int seconds = (int) (l / 1000) % 60 ;
+                int minutes = (int) ((l / (1000*60)) % 60);
+                blackTimer.setText(formatTimer(minutes) + ":" + formatTimer(seconds));
+            }
+
+            @Override
+            public void onFinish() {
+                endgame(true);
+            }
+        }.start();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +94,7 @@ public class MainActivity extends Activity {
         whiteTimer = (TextView) findViewById(R.id.white_timer);
         blackTimer = (TextView) findViewById(R.id.black_timer);
 
-        whiteCounter.start();
+        whiteCounter();
     }
 
 
@@ -132,13 +146,12 @@ public class MainActivity extends Activity {
 
     static void swapTimer(boolean whiteTurn) {
         if (whiteTurn) {
+
             blackCounter.cancel();
-            blackTimer.setText(R.string.timer);
-            whiteCounter.start();
+            whiteCounter();
         } else {
             whiteCounter.cancel();
-            whiteTimer.setText(R.string.timer);
-            blackCounter.start();
+            blackCounter();
         }
     }
 
@@ -156,7 +169,9 @@ public class MainActivity extends Activity {
             tv.setText("Black");
         }
 
-        blackCounter.cancel();
+        if (blackCounter != null) {
+            blackCounter.cancel();
+        }
         whiteCounter.cancel();
 
         b.setOnClickListener(new View.OnClickListener() {
@@ -173,7 +188,10 @@ public class MainActivity extends Activity {
     }
 
     static void reset() {
-       activity.recreate();
+        whiteRemaining = 900000;
+        blackRemaining = 900000;
+        activity.recreate();
+
     }
 
     // formatting the timer
@@ -194,6 +212,10 @@ public class MainActivity extends Activity {
         super.onBackPressed();
 
         whiteCounter.cancel();
-        blackCounter.cancel();
+
+        if (blackCounter != null) {
+            blackCounter.cancel();
+        }
+
     }
 }
