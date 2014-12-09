@@ -40,13 +40,13 @@ public class MainActivity extends Activity {
         public void onTick(long l) {
             int seconds = (int) (l / 1000) % 60 ;
             int minutes = (int) ((l / (1000*60)) % 60);
-            whiteTimer.setText(minutes + ":" + seconds);
+
+            whiteTimer.setText(formatTimer(minutes) + ":" + formatTimer(seconds));
         }
 
         @Override
         public void onFinish() {
             endgame(false);
-
         }
     };
 
@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
         public void onTick(long l) {
             int seconds = (int) (l / 1000) % 60 ;
             int minutes = (int) ((l / (1000*60)) % 60);
-            blackTimer.setText(minutes + ":" + seconds);
+            blackTimer.setText(formatTimer(minutes) + ":" + formatTimer(seconds));
         }
 
         @Override
@@ -155,6 +155,10 @@ public class MainActivity extends Activity {
         } else {
             tv.setText("Black");
         }
+
+        blackCounter.cancel();
+        whiteCounter.cancel();
+
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,5 +174,26 @@ public class MainActivity extends Activity {
 
     static void reset() {
        activity.recreate();
+    }
+
+    // formatting the timer
+    static String formatTimer(int number) {
+
+        String ret = String.valueOf(number);
+
+        if (ret.length() < 2) {
+            ret = "0" + ret;
+        }
+
+        return ret;
+    }
+
+    // we have to stopp the timmer manually on backpressed since it triggers the timer.onfinish() automatically
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        whiteCounter.cancel();
+        blackCounter.cancel();
     }
 }
