@@ -580,25 +580,25 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
                 break;}
         case WHITE_KING:{ //king
         //king(x,y){
-            boolean[][] testarea=kingarea(cx,cy);
+            //boolean[][] testarea=kingarea(cx,cy);
             state=kingmove(cx,cy);
-            for(int ta=0;ta<3;ta++){
-                for(int tb=0;tb<3;tb++){
-                    if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
-                }
-            }
+          // for(int ta=0;ta<3;ta++){
+           //     for(int tb=0;tb<3;tb++){
+           //         if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
+           //     }
+          //  }
           //  //get piece(x,y)//king it self
       // }
         break;}
             case BLACK_KING:{ //king
                 //king(x,y){
-                boolean[][] testarea=kingarea(cx,cy);
+              //  boolean[][] testarea=kingarea(cx,cy);
                 state=kingmove(cx,cy);
-                for(int ta=0;ta<3;ta++){
-                    for(int tb=0;tb<3;tb++){
-                        if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
-                    }
-                }
+              //  for(int ta=0;ta<3;ta++){
+              //      for(int tb=0;tb<3;tb++){
+               //         if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
+                //    }
+               // }
                 //  //get piece(x,y)//king it self
                 //state mod
                 // }
