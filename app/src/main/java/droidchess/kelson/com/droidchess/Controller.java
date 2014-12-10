@@ -112,7 +112,7 @@ return stp;
         return stp;
     }
 
-public boolean isStalemate(){
+public boolean isStalemate(){//called last
     //int[] white=new int [5];
     //int[] black=new int [5];
 boolean stalemate=false;
@@ -169,7 +169,7 @@ boolean stalemate=false;
 
 
 //check and return array
-if((event2w&&event2b)||event1w ||event1b){
+if((event2w&&event2b)||(event1w&&event1b)){
     stalemate=true;
 }
 
@@ -177,7 +177,70 @@ return stalemate;
 
 }
 
-    public void checkmate(){
+    public boolean LineofFire(int fx,int fy){
+        boolean[][] whiteTarget = new boolean[8][8];
+        boolean[][] blackTarget = new boolean[8][8];
+        boolean inLine=false;
+
+        for(int kx=0;kx<8;kx++){
+            for(int ky=0;ky<8;ky++){
+                if(getPiece(kx,ky)==Piece.WHITE_PAWN){whiteTarget=syncBox(whiteTarget,pawnkill(kx,ky,-1));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_PAWN){blackTarget=syncBox(blackTarget,pawnkill(kx,ky,1));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_ROOK){whiteTarget=syncBox(whiteTarget,rookmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_ROOK){blackTarget=syncBox(blackTarget,rookmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_KNIGHT){whiteTarget=syncBox(whiteTarget,knightmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_KNIGHT){blackTarget=syncBox(blackTarget,knightmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_BISHOP){whiteTarget=syncBox(whiteTarget,bishopmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_BISHOP){blackTarget=syncBox(blackTarget,bishopmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_QUEEN){whiteTarget=syncBox(whiteTarget,queenmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_QUEEN){blackTarget=syncBox(blackTarget,queenmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_KING){whiteTarget=syncBox(whiteTarget,kingmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_KING){blackTarget=syncBox(blackTarget,kingmove(kx,ky));continue;}
+            }
+        }
+        if (getPiece(fx,fy).name().contains("WHITE")){
+            if(blackTarget[fx][fy]){inLine=true;}
+        }
+        else if (getPiece(fx,fy).name().contains("BLACK")){
+            if(whiteTarget[fx][fy]){inLine=true;}
+        }
+
+        return inLine;
+    }
+
+
+
+public boolean isCheckmate(Piece kg,int tx,int ty){
+    //public void isCheckmate() {//not finish
+        boolean[][] whiteTarget = isCheck(Piece.BLACK_KING);
+        boolean[][] blackTarget = isCheck(Piece.WHITE_KING);
+        int wx=-1;
+        int by=-1;
+        int wy=-1;
+        int bx=-1;
+        boolean event1w=false;
+        boolean event2w=false;
+        boolean event1b=false;
+        boolean event2b=false;
+
+        for (int xk = 0; xk < 8; xk++) {
+            for (int yk = 0; yk < 8; yk++) {
+                if(getPiece(xk,yk)==Piece.WHITE_KING){wx=xk;wy=yk;continue;}
+                if(getPiece(xk,yk)==Piece.BLACK_KING){bx=xk;by=yk;continue;}
+            }
+        }
+
+        if(Checked(Piece.WHITE_KING,tx,ty)){
+            if(cankingmove(isCheck(Piece.WHITE_KING),wx,wy)){event1w=true;}
+            if(!LineofFire(tx,ty) ){event2w=true;}
+         }
+
+        else if(Checked(Piece.BLACK_KING,tx,ty)){
+            if(cankingmove(isCheck(Piece.BLACK_KING),bx,by)){event1b=true;}
+            if(!LineofFire(tx,ty) ){event2b=true;}
+        }
+
+        return ((event1w&&event2w)||(event1b&&event2b));
 
 
 
@@ -247,8 +310,8 @@ return stalemate;
                 if(getPiece(kx,ky)==Kings){
                     kingx=kx;kingy=ky;
                     continue;}//get king location then check other cell
-                if(getPiece(kx, ky) == Player[0]){trueBox=syncBox(trueBox, pawnkill(kx,ky,pawnd));break;}
-                for(int kk=1;kk<6;kk++) {//look for player piece
+                if(getPiece(kx, ky) == Player[0]){trueBox=syncBox(trueBox, pawnkill(kx,ky,pawnd));continue;}
+                for(int kk=1;kk<5;kk++) {//look for player piece
                     if (getPiece(kx, ky) == Player[kk]) {//if it player piece
                         trueBox = syncBox(trueBox, move(Player[kk], kx, ky));//inside generate.
                         //get line of sight for move
@@ -451,45 +514,13 @@ return stalemate;
                 break;}
         case WHITE_KING:{ //king
         //king(x,y){
-            if(oppose(cx,cy,cx-1,cy-1) || (getPiece(cx-1,cy-1)==Piece.EMPTY)){
-                state[cx-1][cy-1]=true;//    get piece(x-1,y-1) ==(opposing||empty) >> true on state[x-1][y-1]
-            } if(oppose(cx,cy,cx-1,cy) || (getPiece(cx-1,cy)==Piece.EMPTY)){
-                state[cx-1][cy]=true;//   get piece(x-1,y)==(opposing||empty) >> true on state[x-1][y]
-            } if(oppose(cx,cy,cx-1,cy+1) || (getPiece(cx-1,cy+1)==Piece.EMPTY)){
-                state[cx-1][cy+1]=true;//   get piece(x-1,y+1)==(opposing||empty) >> true on state[x-1][y+1]
-            } if(oppose(cx,cy,cx,cy-1) || (getPiece(cx,cy-1)==Piece.EMPTY)){
-                state[cx][cy-1]=true;//  get piece(x,y-1)==(opposing||empty) >> true on state[x][y-1]
-            } if(oppose(cx,cy,cx,cy+1) || (getPiece(cx,cy+1)==Piece.EMPTY)){
-                state[cx][cy+1]=true;//  get piece(x,y+1)==(opposing||empty) >> true on state[x][y+1]
-            } if(oppose(cx,cy,cx+1,cy-1) || (getPiece(cx+1,cy-1)==Piece.EMPTY)){
-                state[cx+1][cy-1]=true;// get piece(x+1,y-1)==(opposing||empty) >> true on state[x+1][y-1]
-            } if(oppose(cx,cy,cx+1,cy) || (getPiece(cx+1,cy)==Piece.EMPTY)){
-                state[cx+1][cy]=true;// get piece(x+1,y)==(opposing||empty) >> true on state[x+1][y]
-            } if(oppose(cx,cy,cx+1,cy+1) || (getPiece(cx+1,cy+1)==Piece.EMPTY)){
-                state[cx+1][cy+1]=true;//  get piece(x+1,y+1)==(opposing||empty) >> true on state[x+1][y+1]
-            }
+            state=kingmove(cx,cy);
           //  //get piece(x,y)//king it self
       // }
         break;}
             case BLACK_KING:{ //king
                 //king(x,y){
-                if(oppose(cx,cy,cx-1,cy-1) || (getPiece(cx-1,cy-1)==Piece.EMPTY)){
-                    state[cx-1][cy-1]=true;//    get piece(x-1,y-1) ==(opposing||empty) >> true on state[x-1][y-1]
-                } if(oppose(cx,cy,cx-1,cy) || (getPiece(cx-1,cy)==Piece.EMPTY)){
-                    state[cx-1][cy]=true;//   get piece(x-1,y)==(opposing||empty) >> true on state[x-1][y]
-                } if(oppose(cx,cy,cx-1,cy+1) || (getPiece(cx-1,cy+1)==Piece.EMPTY)){
-                    state[cx-1][cy+1]=true;//   get piece(x-1,y+1)==(opposing||empty) >> true on state[x-1][y+1]
-                } if(oppose(cx,cy,cx,cy-1) || (getPiece(cx,cy-1)==Piece.EMPTY)){
-                    state[cx][cy-1]=true;//  get piece(x,y-1)==(opposing||empty) >> true on state[x][y-1]
-                } if(oppose(cx,cy,cx,cy+1) || (getPiece(cx,cy+1)==Piece.EMPTY)){
-                    state[cx][cy+1]=true;//  get piece(x,y+1)==(opposing||empty) >> true on state[x][y+1]
-                } if(oppose(cx,cy,cx+1,cy-1) || (getPiece(cx+1,cy-1)==Piece.EMPTY)){
-                    state[cx+1][cy-1]=true;// get piece(x+1,y-1)==(opposing||empty) >> true on state[x+1][y-1]
-                } if(oppose(cx,cy,cx+1,cy) || (getPiece(cx+1,cy)==Piece.EMPTY)){
-                    state[cx+1][cy]=true;// get piece(x+1,y)==(opposing||empty) >> true on state[x+1][y]
-                } if(oppose(cx,cy,cx+1,cy+1) || (getPiece(cx+1,cy+1)==Piece.EMPTY)){
-                    state[cx+1][cy+1]=true;//  get piece(x+1,y+1)==(opposing||empty) >> true on state[x+1][y+1]
-                }
+                state=kingmove(cx,cy);
                 //  //get piece(x,y)//king it self
                 // }
                 break;}
