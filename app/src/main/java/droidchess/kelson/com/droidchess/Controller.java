@@ -33,7 +33,7 @@ public class Controller {
         return cannotmove;//give back the piece
     }
 
-    public boolean cankingmove(boolean[][] route,int kx,int ky){
+    public boolean cankingmove(boolean[][] route,int kx,int ky){//worked in stalemate
         boolean movecheck=false;
         int flag=0;
         for(int dx=-1;dx<2;dx++){
@@ -102,7 +102,8 @@ return stp;
 
         if (py==con) {
             if(getPiece(px,py+pd+pd)==Piece.EMPTY){
-                stp[px][py+pd+pd]=true;
+                if(getPiece(px,py+pd)==Piece.EMPTY){
+                stp[px][py+pd+pd]=true;}
             }
         }
         if(getPiece(px,py+pd)==Piece.EMPTY){
@@ -177,7 +178,52 @@ return stalemate;
 
 }
 
-    public boolean LineofFire(int fx,int fy){
+    private boolean[][] kingarea(int sx,int sy){
+        boolean[][] area=new boolean[3][3];
+
+        for(int d3=-1;d3<2;d3++){
+            for(int d4=-1;d4<2;d4++){//outof bound problem
+                if(getState(getLine(sx,sy),sx+d3,sy+d4)){area[d3+1][d4+1]=true;}
+            }
+        }
+
+        return area;
+    }
+
+    private boolean[][] getLine(int fx,int fy){
+        boolean[][] whiteTarget = new boolean[8][8];
+        boolean[][] blackTarget = new boolean[8][8];
+        boolean[][] targetLine = new boolean[8][8];
+
+        for(int kx=0;kx<8;kx++){
+            for(int ky=0;ky<8;ky++){
+                if(getPiece(kx,ky)==Piece.WHITE_PAWN){whiteTarget=syncBox(whiteTarget,pawnkill(kx,ky,-1));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_PAWN){blackTarget=syncBox(blackTarget,pawnkill(kx,ky,1));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_ROOK){whiteTarget=syncBox(whiteTarget,rookmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_ROOK){blackTarget=syncBox(blackTarget,rookmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_KNIGHT){whiteTarget=syncBox(whiteTarget,knightmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_KNIGHT){blackTarget=syncBox(blackTarget,knightmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_BISHOP){whiteTarget=syncBox(whiteTarget,bishopmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_BISHOP){blackTarget=syncBox(blackTarget,bishopmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_QUEEN){whiteTarget=syncBox(whiteTarget,queenmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_QUEEN){blackTarget=syncBox(blackTarget,queenmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.WHITE_KING){whiteTarget=syncBox(whiteTarget,kingmove(kx,ky));continue;}
+                if(getPiece(kx,ky)==Piece.BLACK_KING){blackTarget=syncBox(blackTarget,kingmove(kx,ky));continue;}
+            }
+        }
+
+        if (getPiece(fx,fy).name().contains("WHITE")){
+           // if(blackTarget[fx][fy]){inLine=true;}
+            targetLine=blackTarget;
+        }
+        else if (getPiece(fx,fy).name().contains("BLACK")){
+           // if(whiteTarget[fx][fy]){inLine=true;}
+            targetLine=whiteTarget;
+        }
+        return targetLine;
+    }
+
+    public boolean LineofFire(int fx,int fy){//need to test, passing last selected xy
         boolean[][] whiteTarget = new boolean[8][8];
         boolean[][] blackTarget = new boolean[8][8];
         boolean inLine=false;
@@ -208,10 +254,27 @@ return stalemate;
         return inLine;
     }
 
+public boolean Checkmate(Piece kg,int tx,int ty) {//only call if isCheck is true
+    boolean event1=false;
+    boolean event2=false;
 
+    int wx=-1;int wy=-1;
+
+    for (int xk = 0; xk < 8; xk++) {
+        for (int yk = 0; yk < 8; yk++) {
+            if(getPiece(xk,yk)==kg){wx=xk;wy=yk;}
+
+        }
+    }
+    //if(cankingmove(isCheck(Piece.WHITE_KING),wx,wy)){event1=true;}
+    if(cankingmove(isCheck(getPiece(wx,wy)),wx,wy)){event1=true;}
+    if(!LineofFire(tx,ty) ){event2=true;}
+
+return event1&&event2;
+ }
 
 public boolean isCheckmate(Piece kg,int tx,int ty){
-    //public void isCheckmate() {//not finish
+
         boolean[][] whiteTarget = isCheck(Piece.BLACK_KING);
         boolean[][] blackTarget = isCheck(Piece.WHITE_KING);
         int wx=-1;
@@ -235,7 +298,7 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
             if(!LineofFire(tx,ty) ){event2w=true;}
          }
 
-        else if(Checked(Piece.BLACK_KING,tx,ty)){
+         if(Checked(Piece.BLACK_KING,tx,ty)){
             if(cankingmove(isCheck(Piece.BLACK_KING),bx,by)){event1b=true;}
             if(!LineofFire(tx,ty) ){event2b=true;}
         }
@@ -273,7 +336,7 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
 
     }
 
-    public boolean[][] isCheck(Piece king){//called after king move
+    public boolean[][] isCheck(Piece king){//worked in stalemate
         //boolean cflag=false;
         boolean[][] trueBox=new boolean[8][8];
         Piece Kings=Piece.OUT;
@@ -436,6 +499,9 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
         }
         return stateking;
     }
+
+
+
     public boolean[][] movetest(Piece piece,int cx,int cy){
         boolean[][] state = new boolean[8][8];
         switch (piece){//can change by piece, or getpiece outside?
@@ -514,14 +580,27 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
                 break;}
         case WHITE_KING:{ //king
         //king(x,y){
+            boolean[][] testarea=kingarea(cx,cy);
             state=kingmove(cx,cy);
+            for(int ta=0;ta<3;ta++){
+                for(int tb=0;tb<3;tb++){
+                    if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
+                }
+            }
           //  //get piece(x,y)//king it self
       // }
         break;}
             case BLACK_KING:{ //king
                 //king(x,y){
+                boolean[][] testarea=kingarea(cx,cy);
                 state=kingmove(cx,cy);
+                for(int ta=0;ta<3;ta++){
+                    for(int tb=0;tb<3;tb++){
+                        if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
+                    }
+                }
                 //  //get piece(x,y)//king it self
+                //state mod
                 // }
                 break;}
         }
