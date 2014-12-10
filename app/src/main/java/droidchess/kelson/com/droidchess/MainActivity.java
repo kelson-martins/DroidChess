@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onFinish() {
-                endgame(false);
+                endgame(false,false);
             }
 
 
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onFinish() {
-                endgame(true);
+                endgame(true,false);
             }
         }.start();
     }
@@ -155,7 +155,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    static void endgame(boolean whiteWinner) {
+    static void endgame(boolean whiteWinner, boolean stalemate) {
         final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View convertView = (View) inflater.inflate(R.layout.endgame, null);
@@ -169,6 +169,9 @@ public class MainActivity extends Activity {
             tv.setText("Black");
         }
 
+        if (stalemate) {
+            tv.setText("Draw");
+        }
         if (blackCounter != null) {
             blackCounter.cancel();
         }

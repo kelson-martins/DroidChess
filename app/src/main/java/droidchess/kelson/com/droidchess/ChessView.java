@@ -319,6 +319,11 @@ public class ChessView extends View {
                     whiteTurn = !whiteTurn;
                     MainActivity.swapTimer(whiteTurn);
                     updateUI();
+
+                    if (c.isStalemate()) {
+                        MainActivity.endgame(whiteTurn,true);
+                    }
+
                 } else {
                     return true;
                 }
@@ -347,7 +352,7 @@ public class ChessView extends View {
     }
 
     private void checkSwap(){
-            if (c2.pawnswap(board[press_x][press_y],press_x,press_y)) {
+            if (c.pawnswap(board[press_x][press_y],press_x,press_y)) {
 
                 MainActivity.showDialogFragment(context);
 
