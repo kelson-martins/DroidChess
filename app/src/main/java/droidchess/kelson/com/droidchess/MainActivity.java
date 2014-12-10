@@ -2,23 +2,15 @@ package droidchess.kelson.com.droidchess;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 
 public class MainActivity extends Activity {
@@ -31,7 +23,6 @@ public class MainActivity extends Activity {
     static TextView blackPiecesw;
     static TextView currentTurnw;
     static TextView currentTurnb;
-    static int lastSwapChoice = 0;
     static TextView whiteTimer;
     static TextView blackTimer;
 
@@ -94,7 +85,8 @@ public class MainActivity extends Activity {
         whiteTimer = (TextView) findViewById(R.id.white_timer);
         blackTimer = (TextView) findViewById(R.id.black_timer);
 
-        whiteCounter();
+        // commented since we are starting the counter after the first move
+        //whiteCounter();
     }
 
 
@@ -114,34 +106,11 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.reset) {
-            super.recreate();
+            reset();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    static void showDialogFragment(Context context) {
-        String names[] ={"Queen","Rook","Bishop","Knight"};
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View convertView = (View) inflater.inflate(R.layout.swap, null);
-        alertDialog.setView(convertView);
-        alertDialog.setTitle("Swap Choices");
-        ListView lv = (ListView) convertView.findViewById(R.id.listView1);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,names);
-        lv.setAdapter(adapter);
-        alertDialog.show();
-
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                lastSwapChoice = i;
-                alertDialog.dismiss();
-            }
-        });
-
-        alertDialog.setCancelable(false);
     }
 
     static void swapTimer(boolean whiteTurn) {
@@ -150,7 +119,9 @@ public class MainActivity extends Activity {
             blackCounter.cancel();
             whiteCounter();
         } else {
-            whiteCounter.cancel();
+            if (whiteCounter != null) {
+                whiteCounter.cancel();
+            }
             blackCounter();
         }
     }
@@ -191,8 +162,15 @@ public class MainActivity extends Activity {
     }
 
     static void reset() {
+
+
+        if (blackCounter != null) {
+            blackCounter.cancel();
+        }
+        whiteCounter.cancel();
         whiteRemaining = 900000;
         blackRemaining = 900000;
+
         activity.recreate();
 
     }
@@ -209,12 +187,15 @@ public class MainActivity extends Activity {
         return ret;
     }
 
-    // we have to stopp the timmer manually on backpressed since it triggers the timer.onfinish() automatically
+    // we have to stop the timmer manually on backpressed since it triggers the timer.onfinish() automatically
+    // if no movements were made generates null pointer
     @Override
     public void onBackPressed() {
         super.onBackPressed();
 
-        whiteCounter.cancel();
+        if (whiteCounter != null) {
+            whiteCounter.cancel();
+        }
 
         if (blackCounter != null) {
             blackCounter.cancel();

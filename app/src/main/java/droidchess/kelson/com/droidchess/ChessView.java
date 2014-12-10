@@ -1,5 +1,6 @@
 package droidchess.kelson.com.droidchess;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,8 +9,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 /**
  * Created by Kelson on 11/24/2014.
@@ -22,9 +27,12 @@ public class ChessView extends View {
     private boolean pieceSelected = false;
 
     private final Controller c = new Controller();
-    private final Controller2 c2 = new Controller2();
 
-    private boolean whiteTurn = true;
+    static int lastSwapChoice = 0;
+
+    static View v;
+    static boolean swapTurn;
+    private static boolean whiteTurn = true;
     Context context;
 
     // an 8x8 array that represents our game board
@@ -42,7 +50,8 @@ public class ChessView extends View {
     private Paint black, white, blue;
 
     // determines the cell coordinates of the press and the release for making moves
-    private int press_x, press_y;
+    private static int press_x;
+    private static int press_y;
     private int selected_x, selected_y;
     private int white_pieces = 16;
     private int black_pieces = 16;
@@ -100,6 +109,7 @@ public class ChessView extends View {
         canvas.save();
 
         if (pieceSelected) {
+            // movements keep store of possible movements of selected piece for further display on board
             movements = c.move(board[selected_x][selected_y], selected_x, selected_y);
         }
 
@@ -212,6 +222,7 @@ public class ChessView extends View {
                     }
                 }
 
+                // displaying possible movements for selected piece
                 if (pieceSelected) {
                     if (movements[x][y]) {
                         canvas.drawCircle(bounding_box.centerX(),bounding_box.centerY(),cell_width/2,blue);
@@ -229,8 +240,6 @@ public class ChessView extends View {
             }
         }
 
-
-
     }
 
     private boolean isEven(int posx, int posy) {
@@ -241,8 +250,6 @@ public class ChessView extends View {
     }
 
     void arrangePieces() {
-
-
         // White Pieces
         board[0][6] = Piece.WHITE_PAWN;
         board[1][6] = Piece.WHITE_PAWN;
@@ -291,7 +298,7 @@ public class ChessView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
+        v = this;
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
 
             for (int i = 0; i < 8; i++) {
@@ -307,12 +314,19 @@ public class ChessView extends View {
 
             if (pieceSelected) {
 
+                // if the same position was pressed, just cancel the selection
                 if (selected_x == press_x && selected_y == press_y) {
                     pieceSelected = false;
 
+                // possible move
                 } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
+
+                    // change the piece
                     board[press_x][press_y] = board[selected_x][selected_y];
+                    // checks it was a pawn movement to the limit
                     checkSwap();
+
+                    // empty the previous block
                     board[selected_x][selected_y] = Piece.EMPTY;
 
                     pieceSelected = false;
@@ -320,8 +334,10 @@ public class ChessView extends View {
                     MainActivity.swapTimer(whiteTurn);
                     updateUI();
 
+                    // after everymove, checking stalemate state
                     if (c.isStalemate()) {
-                        MainActivity.endgame(whiteTurn,true);
+                        // ending game passing draw as second parameter
+                        MainActivity.endgame(false,true);
                     }
 
                 } else {
@@ -329,6 +345,7 @@ public class ChessView extends View {
                 }
 
             } else {
+                // if no pieces is selected and empty block is pressed, just ignore
                 if (board[press_x][press_y] == Piece.EMPTY) {
                     return true;
                 }
@@ -338,9 +355,10 @@ public class ChessView extends View {
                 if (board[press_x][press_y].name().contains("BLACK") && !whiteTurn) {
                     pieceSelected = true;
                 }
+
+                // if first selection of piece, keep control of it so next time we know if a piece is selected and its position in the board
                 selected_x = press_x;
                 selected_y = press_y;
-
 
             }
 
@@ -351,37 +369,11 @@ public class ChessView extends View {
         return super.onTouchEvent(event);
     }
 
+    // checks for pawn swap and popup the options dialog
     private void checkSwap(){
             if (c.pawnswap(board[press_x][press_y],press_x,press_y)) {
-
-                MainActivity.showDialogFragment(context);
-
-                switch (MainActivity.lastSwapChoice) {
-                    case 0:
-                        if (whiteTurn)
-                            board[press_x][press_y] = Piece.WHITE_QUEEN;
-                        else
-                            board[press_x][press_y] = Piece.BLACK_QUEEN;
-                        break;
-                    case 1:
-                        if (whiteTurn)
-                            board[press_x][press_y] = Piece.WHITE_ROOK;
-                        else
-                            board[press_x][press_y] = Piece.BLACK_ROOK;
-                        break;
-                    case 2:
-                        if (whiteTurn)
-                            board[press_x][press_y] = Piece.WHITE_BISHOP;
-                        else
-                            board[press_x][press_y] = Piece.BLACK_BISHOP;
-                        break;
-                    case 3:
-                        if (whiteTurn)
-                            board[press_x][press_y] = Piece.WHITE_KNIGHT;
-                        else
-                            board[press_x][press_y] = Piece.BLACK_KNIGHT;
-                        break;
-                }
+                swapTurn = whiteTurn;
+                showDialogFragment(context);
             }
     }
 
@@ -394,6 +386,7 @@ public class ChessView extends View {
 
     }
 
+    // updates the state of game
     private void updateUI() {
 
         white_pieces = 0;
@@ -414,13 +407,84 @@ public class ChessView extends View {
         MainActivity.whitePiecesw.setText(String.valueOf(white_pieces));
         MainActivity.blackPiecesw.setText(String.valueOf(black_pieces));
 
+        String text = "";
+
         if (whiteTurn) {
-            MainActivity.currentTurnw.setText("White");
-            MainActivity.currentTurnb.setText("White");
+
+            text = "White";
+
+            if (c.Checked(Piece.WHITE_KING,press_x,press_y)) {
+                text += "  - CHECK";
+            }
+
+            MainActivity.currentTurnw.setText(text);
+            MainActivity.currentTurnb.setText(text);
+
+
         } else {
-            MainActivity.currentTurnw.setText("Black");
-            MainActivity.currentTurnb.setText("Black");
+
+            text = "Black";
+
+            if (c.Checked(Piece.BLACK_KING,press_x,press_y)) {
+                text += "  - CHECK";
+            }
+
+            MainActivity.currentTurnw.setText(text);
+            MainActivity.currentTurnb.setText(text);
         }
     }
 
+
+    // dialog to show swap options
+    static void showDialogFragment(Context context) {
+        String names[] ={"Queen","Rook","Bishop","Knight"};
+        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View convertView = (View) inflater.inflate(R.layout.swap, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle("Swap Choices");
+        ListView lv = (ListView) convertView.findViewById(R.id.listView1);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1,names);
+        lv.setAdapter(adapter);
+        alertDialog.show();
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                lastSwapChoice = i;
+                switch (lastSwapChoice) {
+                    case 0:
+                        if (swapTurn)
+                            board[press_x][press_y] = Piece.WHITE_QUEEN;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_QUEEN;
+                        break;
+                    case 1:
+                        if (swapTurn)
+                            board[press_x][press_y] = Piece.WHITE_ROOK;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_ROOK;
+                        break;
+                    case 2:
+                        if (swapTurn)
+                            board[press_x][press_y] = Piece.WHITE_BISHOP;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_BISHOP;
+                        break;
+                    case 3:
+                        if (swapTurn)
+                            board[press_x][press_y] = Piece.WHITE_KNIGHT;
+                        else
+                            board[press_x][press_y] = Piece.BLACK_KNIGHT;
+                        break;
+                }
+                alertDialog.dismiss();
+                v.invalidate();
+
+            }
+        });
+
+        // not allowing the back button to be pressed
+        alertDialog.setCancelable(false);
+    }
 }
