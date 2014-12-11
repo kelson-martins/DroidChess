@@ -30,7 +30,9 @@ public class ChessView extends View {
 
     static int lastSwapChoice = 0;
 
+    // reference to view since we are forcing the invalidate() when swaping pawn outside onDraw()
     static View v;
+
     static boolean swapTurn;
     private static boolean whiteTurn = true;
     Context context;
