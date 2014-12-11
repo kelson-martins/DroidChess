@@ -425,8 +425,11 @@ public class ChessView extends View {
 
             text = "White";
 
-            if (c.Checked(Piece.WHITE_KING,press_x,press_y)) {
-                text += "  - CHECK";
+            if (c.isCheck2(Piece.WHITE_KING)) {
+                if(c.Checkmate(Piece.WHITE_KING,press_x,press_y)){
+                    MainActivity.endgame(false,false);
+                }else{
+                    text += "  - CHECK";}
             }
 
             MainActivity.currentTurnw.setText(text);
@@ -437,11 +440,12 @@ public class ChessView extends View {
 
             text = "Black";
 
-            if (c.Checked(Piece.BLACK_KING,press_x,press_y)) {
-                text += "  - CHECK";
+            if (c.isCheck2(Piece.BLACK_KING)) {
+                if(c.Checkmate(Piece.BLACK_KING,press_x,press_y)){
+                    MainActivity.endgame(true,false);
+                }else{
+                    text += "  - CHECK";}
             }
-
-
 
             MainActivity.currentTurnw.setText(text);
             MainActivity.currentTurnb.setText(text);
