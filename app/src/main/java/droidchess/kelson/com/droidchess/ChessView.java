@@ -43,7 +43,7 @@ public class ChessView extends View {
     private RectF[][] boxes;
 
     // information maintaining the width and height of a single cell
-    private int cell_width, cell_height;
+    private int cell_width;
 
     // rectangle that will represent the size of a cell
     private RectF bounding_box;
