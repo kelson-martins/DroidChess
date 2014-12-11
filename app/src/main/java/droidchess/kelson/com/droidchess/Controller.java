@@ -35,12 +35,16 @@ public class Controller {
 
     public boolean cantkingmove(boolean[][] route,int kx,int ky){//worked in stalemate??
         boolean movecheck=false;
+        boolean[][] kingshield=new boolean[3][3];
+        boolean[][] targetking=new boolean[3][3];
         int flag=0;
         for(int dx=-1;dx<2;dx++){
             for(int dy=-1;dy<2;dy++){
                 if (!(dx==0 && dy==0)) {
-                    if(getState(route,(kx+dx),(ky+dy))){
-                    flag++;}
+                    if((getState(route,(kx+dx),(ky+dy)))&&(!oppose(kx,ky,(kx+dx),(ky+dy)))){
+                        flag++;
+                    }
+
                 }
             }
         }
