@@ -322,7 +322,7 @@ public class ChessView extends View {
                 if (selected_x == press_x && selected_y == press_y) {
                     pieceSelected = false;
 
-                // possible move
+                    // possible move
                 } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
 
                     if (board[press_x][press_y].name().contains("KING")) {
@@ -381,10 +381,10 @@ public class ChessView extends View {
 
     // checks for pawn swap and popup the options dialog
     private void checkSwap(){
-            if (c.pawnswap(board[press_x][press_y],press_x,press_y)) {
-                swapTurn = whiteTurn;
-                showDialogFragment(context);
-            }
+        if (c.pawnswap(board[press_x][press_y],press_x,press_y)) {
+            swapTurn = whiteTurn;
+            showDialogFragment(context);
+        }
     }
 
 

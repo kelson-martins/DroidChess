@@ -53,25 +53,25 @@ public class Controller {
         return movecheck;
     }
 
-public boolean pawnswap(Piece pawn,int sx,int sy){
-    boolean swapflag=false;
-    switch (pawn){
-        case WHITE_PAWN:{
-            if(sy==0){
-                swapflag=true;
+    public boolean pawnswap(Piece pawn,int sx,int sy){
+        boolean swapflag=false;
+        switch (pawn){
+            case WHITE_PAWN:{
+                if(sy==0){
+                    swapflag=true;
+                }
+                break;
             }
-            break;
-        }
-        case BLACK_PAWN:{
-            if(sy==7){
-                swapflag=true;
+            case BLACK_PAWN:{
+                if(sy==7){
+                    swapflag=true;
+                }
+                break;
             }
-            break;
         }
-    }
 
-    return swapflag;
-}
+        return swapflag;
+    }
 
 
     public boolean[][] syncBox(boolean[][] store,boolean[][] add){
@@ -88,18 +88,18 @@ public boolean pawnswap(Piece pawn,int sx,int sy){
     }
 
     private boolean[][] pawnkill(int px,int py,int pd){boolean[][] stp=new boolean[8][8];
-    if(oppose(px,py,px+1,py+pd)){
-        stp[px+1][py+pd]=true;
+        if(oppose(px,py,px+1,py+pd)){
+            stp[px+1][py+pd]=true;
+        }
+        if(oppose(px,py,px-1,py+pd)){
+            stp[px-1][py+pd]=true;
+        }
+        return stp;
     }
-    if(oppose(px,py,px-1,py+pd)){
-        stp[px-1][py+pd]=true;
-    }
-return stp;
-}
 
     private boolean[][] pawnmove(int px,int py,int pd){
         boolean[][] stp=new boolean[8][8];
-           int con=0;
+        int con=0;
         if(pd==-1){
             con=6;
         }else if(pd==1){con=1;}
@@ -107,7 +107,7 @@ return stp;
         if (py==con) {
             if(getPiece(px,py+pd+pd)==Piece.EMPTY){
                 if(getPiece(px,py+pd)==Piece.EMPTY){
-                stp[px][py+pd+pd]=true;}
+                    stp[px][py+pd+pd]=true;}
             }
         }
         if(getPiece(px,py+pd)==Piece.EMPTY){
@@ -117,70 +117,70 @@ return stp;
         return stp;
     }
 
-public boolean isStalemate(){//called last
-    //int[] white=new int [5];
-    //int[] black=new int [5];
-boolean stalemate=false;
-    int whiteP=1;//king
-    int blackP=1;//king
-    int wx=-1;
-    int wy=-1;
-    int bx=-1;
-    int by=-1;
-    boolean event1w=false;
-    boolean event2w=false;
-    boolean event1b=false;
-    boolean event2b=false;
+    public boolean isStalemate(){//called last
+        //int[] white=new int [5];
+        //int[] black=new int [5];
+        boolean stalemate=false;
+        int whiteP=1;//king
+        int blackP=1;//king
+        int wx=-1;
+        int wy=-1;
+        int bx=-1;
+        int by=-1;
+        boolean event1w=false;
+        boolean event2w=false;
+        boolean event1b=false;
+        boolean event2b=false;
 
 
-    for(int px=0;px<8;px++){
-        for(int py=0;py<8;py++){
-            switch(getPiece(px,py)) {
-                case WHITE_PAWN:{whiteP+=3;break;}
-                case WHITE_ROOK:{whiteP+=3;break;}
-                case WHITE_KNIGHT:{whiteP++;break;}//at least 2 or 3
-                case WHITE_BISHOP:{whiteP++;break;}//at least 2 or 3
-                case WHITE_QUEEN:{whiteP+=3;break;}
-                case WHITE_KING:{wx=px;wy=py;break;}//get white king
-                case BLACK_PAWN:{blackP+=3;break;}
-                case BLACK_ROOK:{blackP+=3;break;}
-                case BLACK_KNIGHT:{blackP++;break;}//at least 2 or 3
-                case BLACK_BISHOP:{blackP++;break;}//at least 2 or 3
-                case BLACK_QUEEN:{blackP+=3;break;}
-                case BLACK_KING:{bx=px;by=py;break;}//get black king
+        for(int px=0;px<8;px++){
+            for(int py=0;py<8;py++){
+                switch(getPiece(px,py)) {
+                    case WHITE_PAWN:{whiteP+=3;break;}
+                    case WHITE_ROOK:{whiteP+=3;break;}
+                    case WHITE_KNIGHT:{whiteP++;break;}//at least 2 or 3
+                    case WHITE_BISHOP:{whiteP++;break;}//at least 2 or 3
+                    case WHITE_QUEEN:{whiteP+=3;break;}
+                    case WHITE_KING:{wx=px;wy=py;break;}//get white king
+                    case BLACK_PAWN:{blackP+=3;break;}
+                    case BLACK_ROOK:{blackP+=3;break;}
+                    case BLACK_KNIGHT:{blackP++;break;}//at least 2 or 3
+                    case BLACK_BISHOP:{blackP++;break;}//at least 2 or 3
+                    case BLACK_QUEEN:{blackP+=3;break;}
+                    case BLACK_KING:{bx=px;by=py;break;}//get black king
+                }
             }
         }
-    }
 
-    if(whiteP<3){
-        if(whiteP==1){
-            //check king surrounding
-            if(cantkingmove(isCheck(getPiece(wx,wy)),wx,wy)){
-                event2w=true;
+        if(whiteP<3){
+            if(whiteP==1){
+                //check king surrounding
+                if(cantkingmove(isCheck(getPiece(wx,wy)),wx,wy)){
+                    event2w=true;
+                }
+
             }
+            event1w=true;
+        }//white lacks check piece
+        if(blackP<3){
+            if(whiteP==1){
+                //check king surrounding
+                if(cantkingmove(isCheck(getPiece(bx,by)),bx,by)){
+                    event2b=true;
+                }
 
-        }
-        event1w=true;
-    }//white lacks check piece
-    if(blackP<3){
-        if(whiteP==1){
-        //check king surrounding
-        if(cantkingmove(isCheck(getPiece(bx,by)),bx,by)){
-            event2b=true;
-        }
-
-    }
-        event1b=true;}//black lacks check piece
+            }
+            event1b=true;}//black lacks check piece
 
 
 //check and return array
-if((event2w&&event2b)||(event1w&&event1b)){
-    stalemate=true;
-}
+        if((event2w&&event2b)||(event1w&&event1b)){
+            stalemate=true;
+        }
 
-return stalemate;
+        return stalemate;
 
-}
+    }
 
     private boolean[][] kingLine(int xl,int yl){//no line can be made by pawn knight king
         boolean[][] checkLine=new boolean[8][8];
@@ -366,19 +366,19 @@ return stalemate;
         }
 
         if (getPiece(fx,fy).name().contains("WHITE")){
-           // if(blackTarget[fx][fy]){inLine=true;}
+            // if(blackTarget[fx][fy]){inLine=true;}
             targetLine=blackTarget;
         }
         else if (getPiece(fx,fy).name().contains("BLACK")){
-           // if(whiteTarget[fx][fy]){inLine=true;}
+            // if(whiteTarget[fx][fy]){inLine=true;}
             targetLine=whiteTarget;
         }
         return targetLine;
     }
 
     public boolean LineofFire(int fx,int fy){//need to test, passing last selected xy
-       // boolean[][] whiteTarget = new boolean[8][8];
-       // boolean[][] blackTarget = new boolean[8][8];
+        // boolean[][] whiteTarget = new boolean[8][8];
+        // boolean[][] blackTarget = new boolean[8][8];
         boolean inLine=false;
 
         if(getLine(fx,fy)[fx][fy]){inLine=true;}
@@ -386,32 +386,32 @@ return stalemate;
         return inLine;
     }
 
-public boolean Checkmate(Piece kingg,int tx,int ty) {//only call if isCheck is true
-    boolean event1=false;//king cannot move
-    boolean event2=false;//enemy cannot be slain
-    boolean event3=false;//enemy sight cannot be block
+    public boolean Checkmate(Piece kingg,int tx,int ty) {//only call if isCheck is true
+        boolean event1=false;//king cannot move
+        boolean event2=false;//enemy cannot be slain
+        boolean event3=false;//enemy sight cannot be block
 
-    boolean[][] kgb=kingLine(tx,ty);//checked line of sight to king
-    boolean[][] kga=getLine(tx,ty);//enemy line of sight to this position
-    int wx=-1;int wy=-1;
+        boolean[][] kgb=kingLine(tx,ty);//checked line of sight to king
+        boolean[][] kga=getLine(tx,ty);//enemy line of sight to this position
+        int wx=-1;int wy=-1;
 
 
 
-    for (int xk = 0; xk < 8; xk++) {
-        for (int yk = 0; yk < 8; yk++) {
-            if(getPiece(xk,yk)==kingg){wx=xk;wy=yk;}
-            if(kga[xk][yk]&&kgb[xk][yk]){event3=true;}
+        for (int xk = 0; xk < 8; xk++) {
+            for (int yk = 0; yk < 8; yk++) {
+                if(getPiece(xk,yk)==kingg){wx=xk;wy=yk;}
+                if(kga[xk][yk]&&kgb[xk][yk]){event3=true;}
+            }
         }
+
+        if(cantkingmove(isCheck(getPiece(wx,wy)),wx,wy)){event1=true;}
+        if(!LineofFire(tx,ty) ){event2=true;}
+
+        // kingline tx ty > king borad  ;
+        return event1&&event2&&event3;
     }
 
-    if(cantkingmove(isCheck(getPiece(wx,wy)),wx,wy)){event1=true;}
-    if(!LineofFire(tx,ty) ){event2=true;}
-
-    // kingline tx ty > king borad  ;
-return event1&&event2&&event3;
- }
-
-public boolean isCheckmate(Piece kg,int tx,int ty){
+    public boolean isCheckmate(Piece kg,int tx,int ty){
 
         boolean[][] whiteTarget = isCheck(Piece.BLACK_KING);
         boolean[][] blackTarget = isCheck(Piece.WHITE_KING);
@@ -434,9 +434,9 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
         if(Checked(Piece.WHITE_KING,tx,ty)){
             if(cantkingmove(isCheck(Piece.WHITE_KING),wx,wy)){event1w=true;}
             if(!LineofFire(tx,ty) ){event2w=true;}
-         }
+        }
 
-         if(Checked(Piece.BLACK_KING,tx,ty)){
+        if(Checked(Piece.BLACK_KING,tx,ty)){
             if(cantkingmove(isCheck(Piece.BLACK_KING),bx,by)){event1b=true;}
             if(!LineofFire(tx,ty) ){event2b=true;}
         }
@@ -700,19 +700,19 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
             case WHITE_PAWN: {
 
                 //state=pawnmove(cx,cy,-1);
-               //state=pawnkill(cx,cy,-1);//only pawn kill moves
+                //state=pawnkill(cx,cy,-1);//only pawn kill moves
                 state=syncBox(pawnmove(cx,cy,-1),pawnkill(cx,cy,-1));
                 break;
             } case BLACK_PAWN: {
 
-               // state=pawnmove(cx,cy,1);
-              //state=pawnkill(cx,cy,1);
-               // state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
+                // state=pawnmove(cx,cy,1);
+                //state=pawnkill(cx,cy,1);
+                // state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
                 state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
                 break;
             }
         }
-            return state;
+        return state;
     }
 
     public boolean[][] move(Piece piece,int cx,int cy){
@@ -730,60 +730,60 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
                 state=syncBox(pawnmove(cx,cy,1),pawnkill(cx,cy,1));
 
                 break; }
-        case WHITE_ROOK: {
+            case WHITE_ROOK: {
 
-            state=rookmove(cx,cy);
+                state=rookmove(cx,cy);
 
-        break;}
+                break;}
             case BLACK_ROOK: {
 
                 state=rookmove(cx,cy);
 
-            break;}
-        case WHITE_KNIGHT:{//knight
-        //knight(x,y){//no check blocking
-            state=knightmove(cx,cy);
+                break;}
+            case WHITE_KNIGHT:{//knight
+                //knight(x,y){//no check blocking
+                state=knightmove(cx,cy);
 
-        break;}
+                break;}
             case BLACK_KNIGHT:{//knight
                 //knight(x,y){//no check blocking
                 state=knightmove(cx,cy);
 
                 break;}
-        case WHITE_BISHOP:{ //bishop
+            case WHITE_BISHOP:{ //bishop
 
-            state=bishopmove(cx,cy);
+                state=bishopmove(cx,cy);
 
-    break;}
+                break;}
             case BLACK_BISHOP:{ //bishop
 
                 state=bishopmove(cx,cy);
 
                 break;}
-        case WHITE_QUEEN:{//queen
+            case WHITE_QUEEN:{//queen
 
-            state=queenmove(cx,cy);
+                state=queenmove(cx,cy);
 
-        break;}
+                break;}
             case BLACK_QUEEN:{//queen
 
                 state=queenmove(cx,cy);
 
                 break;}
-        case WHITE_KING:{ //king
+            case WHITE_KING:{ //king
 
-            state=kingmove(cx,cy);
-            boolean[][] temp=getLine(cx,cy);
-            for(int px=0;px<8;px++){
-                for(int py=0;py<8;py++){
-                  if(state[px][py] && temp[px][py]){state[px][py]=false;}
+                state=kingmove(cx,cy);
+                boolean[][] temp=getLine(cx,cy);
+                for(int px=0;px<8;px++){
+                    for(int py=0;py<8;py++){
+                        if(state[px][py] && temp[px][py]){state[px][py]=false;}
 
+                    }
                 }
-            }
 
 
 
-        break;}
+                break;}
             case BLACK_KING:{ //king
 
                 state=kingmove(cx,cy);
@@ -803,50 +803,50 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
 
 
     private boolean oppose(int x0,int y0,int x1,int y1){
-    boolean opposing=false;
-    int a=0;
-    int b=0;
+        boolean opposing=false;
+        int a=0;
+        int b=0;
 
-    switch (getPiece(x0,y0)){
-        case WHITE_PAWN: {a=1;break;}
-        case WHITE_ROOK: {a=1;break;}
-        case WHITE_KNIGHT: {a=1;break;}
-        case WHITE_BISHOP: {a=1;break;}
-        case WHITE_KING: {a=1;break;}
-        case WHITE_QUEEN: {a=1;break;}
-        case BLACK_PAWN: {a=2;break;}
-        case BLACK_ROOK: {a=2;break;}
-        case BLACK_KNIGHT: {a=2;break;}
-        case BLACK_BISHOP: {a=2;break;}
-        case BLACK_KING: {a=2;break;}
-        case BLACK_QUEEN: {a=2;break;}
-        case EMPTY:{a=3;break;}
-        case OUT:{a=3;break;}
-    }
+        switch (getPiece(x0,y0)){
+            case WHITE_PAWN: {a=1;break;}
+            case WHITE_ROOK: {a=1;break;}
+            case WHITE_KNIGHT: {a=1;break;}
+            case WHITE_BISHOP: {a=1;break;}
+            case WHITE_KING: {a=1;break;}
+            case WHITE_QUEEN: {a=1;break;}
+            case BLACK_PAWN: {a=2;break;}
+            case BLACK_ROOK: {a=2;break;}
+            case BLACK_KNIGHT: {a=2;break;}
+            case BLACK_BISHOP: {a=2;break;}
+            case BLACK_KING: {a=2;break;}
+            case BLACK_QUEEN: {a=2;break;}
+            case EMPTY:{a=3;break;}
+            case OUT:{a=3;break;}
+        }
 
-    switch (getPiece(x1,y1)){
-        case WHITE_PAWN: {b=1;break;}
-        case WHITE_ROOK: {b=1;break;}
-        case WHITE_KNIGHT: {b=1;break;}
-        case WHITE_BISHOP: {b=1;break;}
-        case WHITE_KING: {b=1;break;}
-        case WHITE_QUEEN: {b=1;break;}
-        case BLACK_PAWN: {b=2;break;}
-        case BLACK_ROOK: {b=2;break;}
-        case BLACK_KNIGHT: {b=2;break;}
-        case BLACK_BISHOP: {b=2;break;}
-        case BLACK_KING: {b=2;break;}
-        case BLACK_QUEEN: {b=2;break;}
-        case EMPTY:{b=3;break;}
-        case OUT:{b=3;break;}
+        switch (getPiece(x1,y1)){
+            case WHITE_PAWN: {b=1;break;}
+            case WHITE_ROOK: {b=1;break;}
+            case WHITE_KNIGHT: {b=1;break;}
+            case WHITE_BISHOP: {b=1;break;}
+            case WHITE_KING: {b=1;break;}
+            case WHITE_QUEEN: {b=1;break;}
+            case BLACK_PAWN: {b=2;break;}
+            case BLACK_ROOK: {b=2;break;}
+            case BLACK_KNIGHT: {b=2;break;}
+            case BLACK_BISHOP: {b=2;break;}
+            case BLACK_KING: {b=2;break;}
+            case BLACK_QUEEN: {b=2;break;}
+            case EMPTY:{b=3;break;}
+            case OUT:{b=3;break;}
+        }
+        if((a+b)==3) {
+            if (a != b) {
+                opposing = true;
+            }
+        }
+        return opposing;
     }
-if((a+b)==3) {
-    if (a != b) {
-        opposing = true;
-    }
-}
-    return opposing;
-}
 
 
 }

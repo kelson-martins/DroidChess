@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
     }
 
     static void blackCounter() {
-         blackCounter = new CountDownTimer(blackRemaining, 1000) {
+        blackCounter = new CountDownTimer(blackRemaining, 1000) {
             @Override
             public void onTick(long l) {
                 blackRemaining = l;
