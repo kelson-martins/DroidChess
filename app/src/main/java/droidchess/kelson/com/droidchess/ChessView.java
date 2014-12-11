@@ -83,8 +83,8 @@ public class ChessView extends View {
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         white = new Paint(Paint.ANTI_ALIAS_FLAG);
         blue = new Paint(Paint.ANTI_ALIAS_FLAG);
-        black.setColor(Color.DKGRAY);
-        white.setColor(Color.WHITE);
+        black.setColor(0xFFD2691E);
+        white.setColor(0xFFF4A460);
         blue.setColor(Color.BLUE);
         board = new Piece[8][8];
 
@@ -253,6 +253,7 @@ public class ChessView extends View {
     }
 
     void arrangePieces() {
+        whiteTurn = true;
         // White Pieces
         board[0][6] = Piece.WHITE_PAWN;
         board[1][6] = Piece.WHITE_PAWN;
