@@ -51,6 +51,7 @@ public class ChessView extends View {
     // paint objects for the pieces and the board
     private Paint black, white, blue;
 
+
     // determines the cell coordinates of the press and the release for making moves
     private static int press_x;
     private static int press_y;
@@ -323,8 +324,14 @@ public class ChessView extends View {
                 // possible move
                 } else if (c.move(board[selected_x][selected_y],selected_x,selected_y)[press_x][press_y] == true) {
 
+                    if (board[press_x][press_y].name().contains("KING")) {
+                        MainActivity.endgame(whiteTurn,false);
+                    }
+
                     // change the piece
                     board[press_x][press_y] = board[selected_x][selected_y];
+
+
                     // checks it was a pawn movement to the limit
                     checkSwap();
 
@@ -398,8 +405,10 @@ public class ChessView extends View {
             for (int k = 0; k < board.length; k++) {
                 if (board[i][k].name().contains("WHITE")) {
                     white_pieces++;
+
                 } else if (board[i][k].name().contains("BLACK")) {
                     black_pieces++;
+
                 }
             }
         }
@@ -410,6 +419,7 @@ public class ChessView extends View {
         MainActivity.blackPiecesw.setText(String.valueOf(black_pieces));
 
         String text = "";
+
 
         if (whiteTurn) {
 
@@ -430,6 +440,8 @@ public class ChessView extends View {
             if (c.Checked(Piece.BLACK_KING,press_x,press_y)) {
                 text += "  - CHECK";
             }
+
+
 
             MainActivity.currentTurnw.setText(text);
             MainActivity.currentTurnb.setText(text);

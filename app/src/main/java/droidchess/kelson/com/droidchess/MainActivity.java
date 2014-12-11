@@ -146,7 +146,10 @@ public class MainActivity extends Activity {
         if (blackCounter != null) {
             blackCounter.cancel();
         }
-        whiteCounter.cancel();
+        if (whiteCounter != null) {
+            whiteCounter.cancel();
+        }
+
 
         b.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,7 +170,11 @@ public class MainActivity extends Activity {
         if (blackCounter != null) {
             blackCounter.cancel();
         }
-        whiteCounter.cancel();
+
+        if (whiteCounter != null) {
+            whiteCounter.cancel();
+        }
+
         whiteRemaining = 900000;
         blackRemaining = 900000;
 
