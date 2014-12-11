@@ -33,7 +33,7 @@ public class Controller {
         return cannotmove;//give back the piece
     }
 
-    public boolean cankingmove(boolean[][] route,int kx,int ky){//worked in stalemate
+    public boolean cantkingmove(boolean[][] route,int kx,int ky){//worked in stalemate
         boolean movecheck=false;
         int flag=0;
         for(int dx=-1;dx<2;dx++){
@@ -151,7 +151,7 @@ boolean stalemate=false;
     if(whiteP<3){
         if(whiteP==1){
             //check king surrounding
-            if(cankingmove(isCheck(getPiece(wx,wy)),wx,wy)){
+            if(cantkingmove(isCheck(getPiece(wx,wy)),wx,wy)){
                 event2w=true;
             }
 
@@ -161,7 +161,7 @@ boolean stalemate=false;
     if(blackP<3){
         if(whiteP==1){
         //check king surrounding
-        if(cankingmove(isCheck(getPiece(bx,by)),bx,by)){
+        if(cantkingmove(isCheck(getPiece(bx,by)),bx,by)){
             event2b=true;
         }
 
@@ -177,6 +177,155 @@ if((event2w&&event2b)||(event1w&&event1b)){
 return stalemate;
 
 }
+
+    private boolean[][] kingLine(int xl,int yl){//no line can be made by pawn knight king
+        boolean[][] checkLine=new boolean[8][8];
+        int fx = xl;
+        int fy = yl;
+        boolean found =false;
+
+        switch (getPiece(xl,yl)) {
+            case WHITE_ROOK: {
+                fx = xl;
+                fy = yl;
+                found =false;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if ((((dx * dx) + (dy * dy)) == 1)&& (!found)) {
+                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                fx += dx;
+                                fy += dy;
+                            }
+                            if (getPiece(fx + dx, fy + dy) == Piece.BLACK_KING) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                found=true;
+                            }else {checkLine=new boolean[8][8];}
+                            fx = xl;
+                            fy = yl;
+                        }
+                    }
+                }
+
+            }
+            case BLACK_ROOK: {
+                fx = xl;
+                fy = yl;
+                found =false;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if ((((dx * dx) + (dy * dy)) == 1)&& (!found)) {
+                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                fx += dx;
+                                fy += dy;
+                            }
+                            if (getPiece(fx + dx, fy + dy) == Piece.WHITE_KING) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                found=true;
+                            }else {checkLine=new boolean[8][8];}
+                            fx = xl;
+                            fy = yl;
+                        }
+                    }
+                }
+
+            }
+            case WHITE_BISHOP: {
+                fx = xl;
+                fy = yl;
+                found =false;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if ((((dx * dx) + (dy * dy)) == 2)&& (!found)) {
+                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                fx += dx;
+                                fy += dy;
+                            }
+                            if (getPiece(fx + dx, fy + dy) == Piece.BLACK_KING) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                found=true;
+                            }else {checkLine=new boolean[8][8];}
+                            fx = xl;
+                            fy = yl;
+                        }
+                    }
+                }
+
+            }
+            case BLACK_BISHOP: {
+                fx = xl;
+                fy = yl;
+                found =false;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if ((((dx * dx) + (dy * dy)) == 2)&& (!found)) {
+                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                fx += dx;
+                                fy += dy;
+                            }
+                            if (getPiece(fx + dx, fy + dy) == Piece.WHITE_KING) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                found=true;
+                            }else {checkLine=new boolean[8][8];}
+                            fx = xl;
+                            fy = yl;
+                        }
+                    }
+                }
+
+            }
+            case WHITE_QUEEN: {
+                fx = xl;
+                fy = yl;
+                found =false;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if ((!(dx==0 && dy==0))&& (!found)) {
+                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                fx += dx;
+                                fy += dy;
+                            }
+                            if (getPiece(fx + dx, fy + dy) == Piece.BLACK_KING) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                found=true;
+                            }else {checkLine=new boolean[8][8];}
+                            fx = xl;
+                            fy = yl;
+                        }
+                    }
+                }
+
+            }
+            case BLACK_QUEEN: {
+                fx = xl;
+                fy = yl;
+                found =false;
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        if ((!(dx==0 && dy==0))&& (!found)) {
+                            while (getPiece(fx + dx, fy + dy) == Piece.EMPTY) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                fx += dx;
+                                fy += dy;
+                            }
+                            if (getPiece(fx + dx, fy + dy) == Piece.WHITE_KING) {
+                                checkLine[fx + dx][fy + dy] = true;
+                                found=true;
+                            }else {checkLine=new boolean[8][8];}
+                            fx = xl;
+                            fy = yl;
+                        }
+                    }
+                }
+
+            }
+        }
+        return checkLine;
+    }
 
     private boolean[][] kingarea(int sx,int sy){
         boolean[][] area=new boolean[3][3];
@@ -224,53 +373,35 @@ return stalemate;
     }
 
     public boolean LineofFire(int fx,int fy){//need to test, passing last selected xy
-        boolean[][] whiteTarget = new boolean[8][8];
-        boolean[][] blackTarget = new boolean[8][8];
+       // boolean[][] whiteTarget = new boolean[8][8];
+       // boolean[][] blackTarget = new boolean[8][8];
         boolean inLine=false;
 
-        for(int kx=0;kx<8;kx++){
-            for(int ky=0;ky<8;ky++){
-                if(getPiece(kx,ky)==Piece.WHITE_PAWN){whiteTarget=syncBox(whiteTarget,pawnkill(kx,ky,-1));continue;}
-                if(getPiece(kx,ky)==Piece.BLACK_PAWN){blackTarget=syncBox(blackTarget,pawnkill(kx,ky,1));continue;}
-                if(getPiece(kx,ky)==Piece.WHITE_ROOK){whiteTarget=syncBox(whiteTarget,rookmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.BLACK_ROOK){blackTarget=syncBox(blackTarget,rookmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.WHITE_KNIGHT){whiteTarget=syncBox(whiteTarget,knightmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.BLACK_KNIGHT){blackTarget=syncBox(blackTarget,knightmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.WHITE_BISHOP){whiteTarget=syncBox(whiteTarget,bishopmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.BLACK_BISHOP){blackTarget=syncBox(blackTarget,bishopmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.WHITE_QUEEN){whiteTarget=syncBox(whiteTarget,queenmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.BLACK_QUEEN){blackTarget=syncBox(blackTarget,queenmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.WHITE_KING){whiteTarget=syncBox(whiteTarget,kingmove(kx,ky));continue;}
-                if(getPiece(kx,ky)==Piece.BLACK_KING){blackTarget=syncBox(blackTarget,kingmove(kx,ky));continue;}
-            }
-        }
-        if (getPiece(fx,fy).name().contains("WHITE")){
-            if(blackTarget[fx][fy]){inLine=true;}
-        }
-        else if (getPiece(fx,fy).name().contains("BLACK")){
-            if(whiteTarget[fx][fy]){inLine=true;}
-        }
+        if(getLine(fx,fy)[fx][fy]){inLine=true;}
 
         return inLine;
     }
 
 public boolean Checkmate(Piece kg,int tx,int ty) {//only call if isCheck is true
-    boolean event1=false;
-    boolean event2=false;
-
+    boolean event1=false;//king cannot move
+    boolean event2=false;//enemy cannot be slain
+    boolean event3=false;//enemy sight cannot be block
+    boolean[][] kgb=kingLine(tx,ty);//checked line of sight to king
+    boolean[][] kga=getLine(tx,ty);//enemy line of sight to this position
     int wx=-1;int wy=-1;
 
     for (int xk = 0; xk < 8; xk++) {
         for (int yk = 0; yk < 8; yk++) {
             if(getPiece(xk,yk)==kg){wx=xk;wy=yk;}
-
+            if(kga[xk][yk]&&kgb[xk][yk]){event3=true;}
         }
     }
-    //if(cankingmove(isCheck(Piece.WHITE_KING),wx,wy)){event1=true;}
-    if(cankingmove(isCheck(getPiece(wx,wy)),wx,wy)){event1=true;}
+
+    if(cantkingmove(isCheck(getPiece(wx,wy)),wx,wy)){event1=true;}
     if(!LineofFire(tx,ty) ){event2=true;}
 
-return event1&&event2;
+    // kingline tx ty > king borad  ;
+return event1&&event2&&event3;
  }
 
 public boolean isCheckmate(Piece kg,int tx,int ty){
@@ -294,12 +425,12 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
         }
 
         if(Checked(Piece.WHITE_KING,tx,ty)){
-            if(cankingmove(isCheck(Piece.WHITE_KING),wx,wy)){event1w=true;}
+            if(cantkingmove(isCheck(Piece.WHITE_KING),wx,wy)){event1w=true;}
             if(!LineofFire(tx,ty) ){event2w=true;}
          }
 
          if(Checked(Piece.BLACK_KING,tx,ty)){
-            if(cankingmove(isCheck(Piece.BLACK_KING),bx,by)){event1b=true;}
+            if(cantkingmove(isCheck(Piece.BLACK_KING),bx,by)){event1b=true;}
             if(!LineofFire(tx,ty) ){event2b=true;}
         }
 
@@ -579,29 +710,29 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
 
                 break;}
         case WHITE_KING:{ //king
-        //king(x,y){
-            //boolean[][] testarea=kingarea(cx,cy);
+
             state=kingmove(cx,cy);
-          // for(int ta=0;ta<3;ta++){
-           //     for(int tb=0;tb<3;tb++){
-           //         if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
-           //     }
-          //  }
-          //  //get piece(x,y)//king it self
-      // }
+            boolean[][] temp=getLine(cx,cy);
+            for(int px=0;px<8;px++){
+                for(int py=0;py<8;py++){
+                  if(state[px][py] && temp[px][py]){state[px][py]=false;}
+
+                }
+            }
+
+
+
         break;}
             case BLACK_KING:{ //king
-                //king(x,y){
-              //  boolean[][] testarea=kingarea(cx,cy);
+
                 state=kingmove(cx,cy);
-              //  for(int ta=0;ta<3;ta++){
-              //      for(int tb=0;tb<3;tb++){
-               //         if(testarea[ta][tb]){state[cx-1+ta][cy-1+tb]=false;}
-                //    }
-               // }
-                //  //get piece(x,y)//king it self
-                //state mod
-                // }
+                boolean[][] temp=getLine(cx,cy);
+                for(int px=0;px<8;px++){
+                    for(int py=0;py<8;py++){
+                        if(state[px][py] && temp[px][py]){state[px][py]=false;}
+
+                    }
+                }
                 break;}
         }
 
