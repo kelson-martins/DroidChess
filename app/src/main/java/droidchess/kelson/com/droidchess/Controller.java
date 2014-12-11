@@ -23,7 +23,7 @@ public class Controller {
 
     private Boolean getState(boolean[][] top, int cx, int cy) {//get state of the particular cell on the board
         // TODO Auto-generated method stub
-        Boolean cannotmove=true;//temp variable to store cell piece
+        Boolean cannotmove=false;//temp variable to store cell piece
         try {
             cannotmove = top[cx][cy];//try to get this particular cell
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -33,7 +33,7 @@ public class Controller {
         return cannotmove;//give back the piece
     }
 
-    public boolean cantkingmove(boolean[][] route,int kx,int ky){//worked in stalemate
+    public boolean cantkingmove(boolean[][] route,int kx,int ky){//worked in stalemate??
         boolean movecheck=false;
         int flag=0;
         for(int dx=-1;dx<2;dx++){
@@ -382,17 +382,20 @@ return stalemate;
         return inLine;
     }
 
-public boolean Checkmate(Piece kg,int tx,int ty) {//only call if isCheck is true
+public boolean Checkmate(Piece kingg,int tx,int ty) {//only call if isCheck is true
     boolean event1=false;//king cannot move
     boolean event2=false;//enemy cannot be slain
     boolean event3=false;//enemy sight cannot be block
+
     boolean[][] kgb=kingLine(tx,ty);//checked line of sight to king
     boolean[][] kga=getLine(tx,ty);//enemy line of sight to this position
     int wx=-1;int wy=-1;
 
+
+
     for (int xk = 0; xk < 8; xk++) {
         for (int yk = 0; yk < 8; yk++) {
-            if(getPiece(xk,yk)==kg){wx=xk;wy=yk;}
+            if(getPiece(xk,yk)==kingg){wx=xk;wy=yk;}
             if(kga[xk][yk]&&kgb[xk][yk]){event3=true;}
         }
     }
@@ -466,7 +469,61 @@ public boolean isCheckmate(Piece kg,int tx,int ty){
 
 
     }
+    public boolean isCheck2(Piece king){//worked in stalemate
+        boolean cflag=false;
+        boolean[][] trueBox=new boolean[8][8];
+        Piece Kings=Piece.OUT;
+        Piece[] Player=new Piece[6];
+        int kingx=-1;
+        int kingy=-1;
+        int pawnd=0;
+        if(king==Piece.WHITE_KING){//need current player
+            Kings=Piece.WHITE_KING;
+            Player[0]=Piece.BLACK_PAWN;
+            Player[1]=Piece.BLACK_ROOK;
+            Player[2]=Piece.BLACK_KNIGHT;
+            Player[3]=Piece.BLACK_BISHOP;
+            Player[4]=Piece.BLACK_QUEEN;
+            Player[5]=Piece.BLACK_KING;
+            pawnd=1;
+        }else{Kings=Piece.BLACK_KING;
+            Player[0]=Piece.WHITE_PAWN;
+            Player[1]=Piece.WHITE_ROOK;
+            Player[2]=Piece.WHITE_KNIGHT;
+            Player[3]=Piece.WHITE_BISHOP;
+            Player[4]=Piece.WHITE_QUEEN;
+            Player[5]=Piece.WHITE_KING;
+            pawnd=-1;
+        }
 
+
+        //need x,y of last position?
+        //or check every pieces?
+        //need current player...
+        //not certain
+        for(int kx=0;kx<8;kx++){
+            for(int ky=0;ky<8;ky++){//check every cell
+                if(getPiece(kx,ky)==Kings){
+                    kingx=kx;kingy=ky;
+                    continue;}//get king location then check other cell
+                if(getPiece(kx, ky) == Player[0]){trueBox=syncBox(trueBox, pawnkill(kx,ky,pawnd));continue;}
+                for(int kk=1;kk<5;kk++) {//look for player piece
+                    if (getPiece(kx, ky) == Player[kk]) {//if it player piece
+                        trueBox = syncBox(trueBox, move(Player[kk], kx, ky));//inside generate.
+                        //get line of sight for move
+                        break;//out of this cell,check other cell
+                    }
+
+                }
+
+            }
+        }
+        if(getPiece(kingx,kingy)!=Piece.OUT) {
+            if (trueBox[kingx][kingy])
+            { cflag=true;}
+        }
+        return cflag;
+    }
     public boolean[][] isCheck(Piece king){//worked in stalemate
         //boolean cflag=false;
         boolean[][] trueBox=new boolean[8][8];
