@@ -52,6 +52,42 @@ public class Controller {
 
         return movecheck;
     }
+private boolean oobget(boolean[][] possiblemove,int ax,int ay){
+    boolean oob=false;
+
+    try {
+        oob = possiblemove[ax][ay];//try to get this particular cell
+    } catch (ArrayIndexOutOfBoundsException e) {
+        oob = false;//if the cell is not on board, out of bound,not possible move
+    }
+
+    return oob;
+}
+    private boolean gotmate(int kx,int ky){
+        boolean[][] shieldstate=kingmove(kx,ky);//king surrounding is empty or enemy
+        boolean[][] temp=getLine(kx,ky);//get enemy line of sight exclude enemy
+        int path=0;
+        for(int px=0;px<8;px++){
+            for(int py=0;py<8;py++){
+                if(shieldstate[px][py] && temp[px][py]){shieldstate[px][py]=false;}//empty but not safe
+
+            }
+        }//check king surounding, if no move
+        for(int dx=-1;dx<2;dx++){
+            for(int dy=-1;dy<2;dy++){
+                if(oobget(shieldstate,kx+dx,ky+dy)){
+                    path++;
+                }
+
+        }}
+        if(path==0){
+            return true;
+        }else{return false;}
+
+
+    }
+
+
 
     public boolean pawnswap(Piece pawn,int sx,int sy){
         boolean swapflag=false;
@@ -181,8 +217,8 @@ public class Controller {
         return stalemate;
 
     }
-
-    private boolean[][] kingLine(int xl,int yl){//no line can be made by pawn knight king
+    public boolean[][] kingLine(int xl,int yl){//no line can be made by pawn knight king
+    //private boolean[][] kingLine(int xl,int yl){//no line can be made by pawn knight king
         boolean[][] checkLine=new boolean[8][8];
         int fx = xl;
         int fy = yl;
@@ -210,7 +246,7 @@ public class Controller {
                         }
                     }
                 }
-
+            break;
             }
             case BLACK_ROOK: {
                 fx = xl;
@@ -233,7 +269,7 @@ public class Controller {
                         }
                     }
                 }
-
+                break;
             }
             case WHITE_BISHOP: {
                 fx = xl;
@@ -256,7 +292,7 @@ public class Controller {
                         }
                     }
                 }
-
+                break;
             }
             case BLACK_BISHOP: {
                 fx = xl;
@@ -279,7 +315,7 @@ public class Controller {
                         }
                     }
                 }
-
+                break;
             }
             case WHITE_QUEEN: {
                 fx = xl;
@@ -302,7 +338,7 @@ public class Controller {
                         }
                     }
                 }
-
+                break;
             }
             case BLACK_QUEEN: {
                 fx = xl;
@@ -325,7 +361,7 @@ public class Controller {
                         }
                     }
                 }
-
+                break;
             }
         }
         return checkLine;
@@ -342,8 +378,8 @@ public class Controller {
 
         return area;
     }
-
-    private boolean[][] getLine(int fx,int fy){
+    public boolean[][] getLine(int fx,int fy){
+    //private boolean[][] getLine(int fx,int fy){
         boolean[][] whiteTarget = new boolean[8][8];
         boolean[][] blackTarget = new boolean[8][8];
         boolean[][] targetLine = new boolean[8][8];
@@ -404,7 +440,7 @@ public class Controller {
             }
         }
 
-        if(cantkingmove(isCheck(getPiece(wx,wy)),wx,wy)){event1=true;}
+        if(gotmate(wx,wy)){event1=true;}
         if(!LineofFire(tx,ty) ){event2=true;}
 
         // kingline tx ty > king borad  ;
