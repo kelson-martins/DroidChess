@@ -49,7 +49,7 @@ public class ChessView extends View {
     private RectF bounding_box;
 
     // paint objects for the pieces and the board
-    private Paint black, white, blue,colortest,colortest2;
+    private Paint black, white, blue;
 
 
     // determines the cell coordinates of the press and the release for making moves
@@ -83,13 +83,11 @@ public class ChessView extends View {
         black = new Paint(Paint.ANTI_ALIAS_FLAG);
         white = new Paint(Paint.ANTI_ALIAS_FLAG);
         blue = new Paint(Paint.ANTI_ALIAS_FLAG);
-        colortest= new Paint(Paint.ANTI_ALIAS_FLAG);
-        colortest2= new Paint(Paint.ANTI_ALIAS_FLAG);
+
         black.setColor(0xFFD2691E);
         white.setColor(0xFFF4A460);
         blue.setColor(Color.BLUE);
-        colortest.setColor(Color.GREEN);
-        colortest2.setColor(Color.MAGENTA);
+
         board = new Piece[8][8];
 
         boxes = new RectF[8][8];
@@ -119,8 +117,6 @@ public class ChessView extends View {
         if (pieceSelected) {
             // movements keep store of possible movements of selected piece for further display on board
             movements = c.move(board[selected_x][selected_y], selected_x, selected_y);
-            movement2 = c.getLine(selected_x,selected_y);
-            movement3 = c.kingLine(selected_x,selected_y);
         }
 
         // Draw the Boxes
@@ -236,12 +232,6 @@ public class ChessView extends View {
                 if (pieceSelected) {
                     if (movements[x][y]) {
                         canvas.drawCircle(bounding_box.centerX(),bounding_box.centerY(),cell_width/2,blue);
-                    }
-                    if (movement2[x][y]) {
-                        canvas.drawCircle(bounding_box.centerX(),bounding_box.centerY(),cell_width/4,colortest);
-                    }
-                    if (movement3[x][y]) {
-                        canvas.drawCircle(bounding_box.centerX(),bounding_box.centerY(),cell_width/6,colortest2);
                     }
                 }
 
@@ -439,7 +429,7 @@ public class ChessView extends View {
 
             text = "White";
 
-            if (c.isCheck2(Piece.WHITE_KING)) {
+            if (c.isCheck(Piece.WHITE_KING)) {
                 if(c.Checkmate(Piece.WHITE_KING,press_x,press_y)){
                     MainActivity.endgame(false,false);
                 }else{
@@ -454,7 +444,7 @@ public class ChessView extends View {
 
             text = "Black";
 
-            if (c.isCheck2(Piece.BLACK_KING)) {
+            if (c.isCheck(Piece.BLACK_KING)) {
                 if(c.Checkmate(Piece.BLACK_KING,press_x,press_y)){
                     MainActivity.endgame(true,false);
                 }else{
